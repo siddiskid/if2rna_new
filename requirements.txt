@@ -1,0 +1,35 @@
+# Core dependencies for TCGA data download and processing
+requests>=2.31.0
+pandas>=2.0.0
+numpy>=1.24.0
+tqdm>=4.65.0
+
+# Scientific computing
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Image processing
+Pillow>=10.0.0
+openslide-python>=1.3.0
+opencv-python>=4.8.0
+
+# Deep learning (for SEQUOIA)
+torch>=2.0.0
+torchvision>=0.15.0
+timm>=0.9.0
+
+# Data handling
+h5py>=3.9.0
+# tables>=3.8.0  # Install via conda: conda install -c conda-forge pytables
+
+# Utilities
+pyyaml>=6.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# For interacting with Hugging Face
+huggingface-hub>=0.16.0
+transformers>=4.30.0
+
+# Optional: For faster operations
+numba>=0.57.0
