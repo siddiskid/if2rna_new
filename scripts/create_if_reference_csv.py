@@ -74,8 +74,9 @@ def match_rois_to_images(segment_df, image_dir, organ):
         segment_label = row['SegmentLabel']
         
         # Construct expected image filename
-        if pd.notna(segment_label) and segment_label not in ['Full ROI', '']:
-            # Segment-specific image
+        # For "Full ROI", "Geometric Segment", empty, or similar - use composite image
+        if pd.notna(segment_label) and segment_label not in ['Full ROI', 'Geometric Segment', 'segment1', '']:
+            # Segment-specific image (PanCK+, PanCK-, CD68, SMA, HT-5+, etc.)
             image_name = f"{slide_name}_{scan_label}_ROI_{roi_label}_{segment_label}.png"
         else:
             # Full ROI composite
