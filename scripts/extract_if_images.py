@@ -28,17 +28,22 @@ def parse_roi_image_name(filename):
     Examples:
         025247T1 - 001.png -> (025247T1, 001, None)
         025247T1 - 001 - PanCK+.png -> (025247T1, 001, PanCK+)
-        025247T1 - 001 - Segments.png -> (025247T1, 001, Segments)
+        MIPCC-DSP-A-20220222C-01 - 011 - CD68.png -> (MIPCC-DSP-A-20220222C-01, 011, CD68)
     """
-    pattern = r'([A-Z0-9]+)\s*-\s*(\d+)(?:\s*-\s*(.+))?\.png'
-    match = re.match(pattern, filename)
+    # Remove .png extension first
+    name_without_ext = filename.replace('.png', '')
     
-    if match:
-        scan_label = match.group(1)
-        roi_num = match.group(2)
-        segment = match.group(3) if match.group(3) else None
-        return scan_label, roi_num, segment
-    return None, None, None
+    # Split by ' - ' (space-hyphen-space)
+    parts = name_without_ext.split(' - ')
+    
+    if len(parts) < 2:
+        return None, None, None
+    
+    scan_label = parts[0]
+    roi_num = parts[1]
+    segment = parts[2] if len(parts) >= 3 else None
+    
+    return scan_label, roi_num, segment
 
 
 def extract_images_from_zip(zip_path, output_dir, slide_name, extract_segments=True):
