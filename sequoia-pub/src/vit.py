@@ -162,6 +162,13 @@ def train(model, dataloaders, optimizer, accelerator=None,
 
                 with torch.set_grad_enabled(phase == 'train'):
                     pred = model(image)
+                    
+                    # Check for NaN in predictions
+                    if torch.isnan(pred).any():
+                        print(f"⚠ Warning: NaN detected in predictions at {phase} step {s}")
+                        print(f"  RNA data range: [{rna_data.min():.2f}, {rna_data.max():.2f}]")
+                        print(f"  Image features range: [{image.min():.2f}, {image.max():.2f}]")
+                        continue
 
                 loss = loss_fn(pred, rna_data)
                 mae = mean_absolute_error(rna_data.detach().cpu().numpy(), pred.detach().cpu().numpy())
@@ -177,6 +184,8 @@ def train(model, dataloaders, optimizer, accelerator=None,
                         accelerator.backward(loss)
                     else:
                         loss.backward()
+                    # Gradient clipping for stability
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                     optimizer.step()
 
             losses[phase] = np.mean(losses[phase])

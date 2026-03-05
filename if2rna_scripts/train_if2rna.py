@@ -206,6 +206,22 @@ def main():
     num_genes = len(rna_cols)
     print(f"Number of genes: {num_genes}")
     
+    # Check for NaN/inf in RNA data
+    rna_data = df[rna_cols].values
+    if np.any(np.isnan(rna_data)):
+        print(f"⚠ Warning: {np.sum(np.isnan(rna_data))} NaN values in RNA data")
+        df[rna_cols] = df[rna_cols].fillna(0.0)
+    if np.any(np.isinf(rna_data)):
+        print(f"⚠ Warning: {np.sum(np.isinf(rna_data))} inf values in RNA data")
+        df[rna_cols] = df[rna_cols].replace([np.inf, -np.inf], 0.0)
+    
+    # Print RNA data statistics
+    print(f"\nRNA expression statistics:")
+    print(f"  Min: {df[rna_cols].min().min():.2f}")
+    print(f"  Max: {df[rna_cols].max().max():.2f}")
+    print(f"  Mean: {df[rna_cols].mean().mean():.2f}")
+    print(f"  Std: {df[rna_cols].std().mean():.2f}")
+    
     # Cross-validation splits
     train_idxs, val_idxs, test_idxs = patient_kfold(df, n_splits=args.k, random_state=args.seed)
     
