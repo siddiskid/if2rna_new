@@ -28,9 +28,10 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split, KFold
 
 import sys
-sys.path.append('sequoia-pub/src')
-from vit import train, evaluate
-from tformer_lin import ViS
+sys.path.insert(0, 'sequoia-pub/src')
+sys.path.insert(0, 'sequoia-pub')
+from src.vit import train, evaluate
+from src.tformer_lin import ViS
 
 
 class IFRNADataset(Dataset):
@@ -281,7 +282,7 @@ def main():
                 device=device
             )
         else:  # vit
-            from vit import ViT
+            from src.vit import ViT
             model = ViT(
                 num_outputs=num_genes,
                 dim=feature_dim,
@@ -351,7 +352,7 @@ def main():
                 device=device
             )
         else:
-            from vit import ViT
+            from src.vit import ViT
             random_model = ViT(
                 num_outputs=num_genes,
                 dim=feature_dim,
