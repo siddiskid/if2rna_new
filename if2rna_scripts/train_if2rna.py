@@ -307,7 +307,7 @@ def main():
             train_dataset, 
             batch_size=args.batch_size,
             shuffle=True,
-            num_workers=0,
+            num_workers=4,  # Use 4 workers for faster loading
             pin_memory=True,
             collate_fn=custom_collate_fn,
             worker_init_fn=seed_worker,
@@ -318,7 +318,7 @@ def main():
             val_dataset,
             batch_size=args.batch_size,
             shuffle=True,
-            num_workers=0,
+            num_workers=4,
             pin_memory=True,
             collate_fn=custom_collate_fn
         )
@@ -327,7 +327,7 @@ def main():
             test_dataset,
             batch_size=args.batch_size,
             shuffle=False,
-            num_workers=0,
+            num_workers=4,
             pin_memory=True,
             collate_fn=custom_collate_fn
         )
