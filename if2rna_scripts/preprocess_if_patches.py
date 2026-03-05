@@ -19,12 +19,11 @@ from pathlib import Path
 import h5py
 from tqdm import tqdm
 from PIL import Image
-from skimage.exposure import is_low_contrast
 import cv2
 
 
 def extract_patches_from_image(image_path, patch_size=256, max_patches=100, overlap=0, 
-                               background_threshold=0.1):
+                               background_threshold=0.95):
     """
     Extract patches from a single IF ROI image
     
@@ -33,7 +32,7 @@ def extract_patches_from_image(image_path, patch_size=256, max_patches=100, over
         patch_size: Size of square patches
         max_patches: Maximum number of patches to extract
         overlap: Overlap between patches (0-0.5)
-        background_threshold: Skip patches with >X background
+        background_threshold: Skip patches with >X completely black pixels (0-1)
     
     Returns:
         List of patches as numpy arrays
@@ -59,11 +58,13 @@ def extract_patches_from_image(image_path, patch_size=256, max_patches=100, over
             for x in range(0, w - patch_size + 1, stride):
                 patch = img_array[y:y+patch_size, x:x+patch_size]
                 
-                # Check if patch is mostly background (very dark or very bright)
+                # For IF images: only skip if patch is COMPLETELY black (no signal at all)
+                # IF images are naturally dark with bright fluorescent signals
                 gray = cv2.cvtColor(patch, cv2.COLOR_RGB2GRAY)
-                background_ratio = (np.sum(gray < 10) + np.sum(gray > 245)) / gray.size
+                completely_black_ratio = np.sum(gray < 5) / gray.size
                 
-                if background_ratio < background_threshold and not is_low_contrast(patch):
+                # Keep patch if it has ANY signal (less than 95% completely black)
+                if completely_black_ratio < background_threshold:
                     patches.append(patch)
                     positions.append((x, y))
         
