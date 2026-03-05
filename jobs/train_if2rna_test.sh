@@ -17,7 +17,7 @@ echo "Job ID: $SLURM_JOB_ID"
 nvidia-smi
 
 # Activate virtual environment
-source /arc/project/st-singha53-1/if2rna/.venv/bin/activate
+source .venv/bin/activate
 
 # Change to project directory
 cd /scratch/st-singha53-1/schiluku/if2rna_new
