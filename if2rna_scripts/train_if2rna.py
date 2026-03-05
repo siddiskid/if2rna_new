@@ -210,13 +210,39 @@ def main():
     
     # Check for NaN/inf in RNA data and filter bad samples
     print("\nCleaning RNA data...")
+    
+    # Check NaN statistics
     nan_counts_per_sample = df[rna_cols].isna().sum(axis=1)
-    samples_with_many_nans = nan_counts_per_sample > (num_genes * 0.1)  # >10% NaN
+    nan_counts_per_gene = df[rna_cols].isna().sum(axis=0)
+    
+    nan_percent_per_sample = (nan_counts_per_sample / num_genes * 100)
+    nan_percent_per_gene = (nan_counts_per_gene / len(df) * 100)
+    
+    print(f"  NaN per sample: Min={nan_percent_per_sample.min():.1f}%, Max={nan_percent_per_sample.max():.1f}%, Mean={nan_percent_per_sample.mean():.1f}%")
+    print(f"  NaN per gene: Min={nan_percent_per_gene.min():.1f}%, Max={nan_percent_per_gene.max():.1f}%, Mean={nan_percent_per_gene.mean():.1f}%")
+    
+    # Filter genes with >50% missing values across samples
+    bad_genes = nan_counts_per_gene > (len(df) * 0.5)
+    if bad_genes.any():
+        bad_gene_cols = [col for col, is_bad in zip(rna_cols, bad_genes) if is_bad]
+        print(f"  Removing {len(bad_gene_cols)} genes with >50% NaN values")
+        df = df.drop(columns=bad_gene_cols)
+        rna_cols = [c for c in df.columns if c.startswith('rna_')]
+        num_genes = len(rna_cols)
+        print(f"  Remaining genes: {num_genes}")
+    
+    # Remove samples with >90% NaN (completely broken)
+    nan_counts_per_sample = df[rna_cols].isna().sum(axis=1)
+    samples_with_many_nans = nan_counts_per_sample > (num_genes * 0.9)
     
     if samples_with_many_nans.any():
-        print(f"⚠ Removing {samples_with_many_nans.sum()} samples with >10% NaN genes")
+        print(f"  Removing {samples_with_many_nans.sum()} samples with >90% NaN genes")
         df = df[~samples_with_many_nans].reset_index(drop=True)
         print(f"  Remaining samples: {len(df)}")
+    
+    if len(df) == 0:
+        print("\n✗ ERROR: All samples removed! Check reference CSV creation.")
+        sys.exit(1)
     
     # Fill remaining NaNs with 0
     rna_data = df[rna_cols].values
