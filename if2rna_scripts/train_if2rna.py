@@ -163,6 +163,8 @@ def main():
                        help='Path to checkpoint for resuming/finetuning')
     parser.add_argument('--sample_percent', type=float, default=None,
                        help='Downsample data fraction (for testing)')
+    parser.add_argument('--log_transform', action='store_true',
+                       help='Log-transform RNA expression (log1p)')
     
     args = parser.parse_args()
     
@@ -206,13 +208,26 @@ def main():
     num_genes = len(rna_cols)
     print(f"Number of genes: {num_genes}")
     
-    # Check for NaN/inf in RNA data
+    # Check for NaN/inf in RNA data and filter bad samples
+    print("\nCleaning RNA data...")
+    nan_counts_per_sample = df[rna_cols].isna().sum(axis=1)
+    samples_with_many_nans = nan_counts_per_sample > (num_genes * 0.1)  # >10% NaN
+    
+    if samples_with_many_nans.any():
+        print(f"⚠ Removing {samples_with_many_nans.sum()} samples with >10% NaN genes")
+        df = df[~samples_with_many_nans].reset_index(drop=True)
+        print(f"  Remaining samples: {len(df)}")
+    
+    # Fill remaining NaNs with 0
     rna_data = df[rna_cols].values
-    if np.any(np.isnan(rna_data)):
-        print(f"⚠ Warning: {np.sum(np.isnan(rna_data))} NaN values in RNA data")
+    nan_count = np.sum(np.isnan(rna_data))
+    if nan_count > 0:
+        print(f"  Filling {nan_count} remaining NaN values with 0")
         df[rna_cols] = df[rna_cols].fillna(0.0)
+    
     if np.any(np.isinf(rna_data)):
-        print(f"⚠ Warning: {np.sum(np.isinf(rna_data))} inf values in RNA data")
+        inf_count = np.sum(np.isinf(rna_data))
+        print(f"  Replacing {inf_count} inf values with 0")
         df[rna_cols] = df[rna_cols].replace([np.inf, -np.inf], 0.0)
     
     # Print RNA data statistics
@@ -221,6 +236,13 @@ def main():
     print(f"  Max: {df[rna_cols].max().max():.2f}")
     print(f"  Mean: {df[rna_cols].mean().mean():.2f}")
     print(f"  Std: {df[rna_cols].std().mean():.2f}")
+    
+    # Log-transform if requested
+    if args.log_transform:
+        print("\nApplying log1p transformation to RNA data...")
+        df[rna_cols] = np.log1p(df[rna_cols])
+        print(f"  After log1p - Min: {df[rna_cols].min().min():.2f}, Max: {df[rna_cols].max().max():.2f}")
+        print(f"  After log1p - Mean: {df[rna_cols].mean().mean():.2f}, Std: {df[rna_cols].std().mean():.2f}")
     
     # Cross-validation splits
     train_idxs, val_idxs, test_idxs = patient_kfold(df, n_splits=args.k, random_state=args.seed)
