@@ -8,9 +8,14 @@ Analyzes test_results.pkl to compute:
 - Visualization of predictions vs actual expression
 """
 
+import os
+os.environ['MPLCONFIGDIR'] = '/tmp/matplotlib_config'
+
 import pickle
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
@@ -44,27 +49,32 @@ def analyze_by_organ(results, reference_df):
     """Analyze performance by organ type."""
     organ_results = {}
     
-    for fold_idx, fold_data in enumerate(results['folds']):
+    # Iterate through splits
+    for split_key, split_data in results.items():
+        if not split_key.startswith('split_'):
+            continue
+            
         # Get test sample IDs
-        test_samples = fold_data['test_samples']
+        sample_ids = split_data.get('sample_ids', [])
+        predictions = split_data.get('preds', np.array([]))
+        actuals = split_data.get('y', np.array([]))
         
         # Match to organ
-        for sample_id in test_samples:
-            # Extract organ from sample_id (format: organ_...)
-            organ = sample_id.split('_')[0] if '_' in sample_id else 'unknown'
+        for idx, sample_id in enumerate(sample_ids):
+            # Extract organ from sample_id (first part before underscore)
+            parts = sample_id.split('_')
+            # Handle special case: mu/hu_organ_... format
+            if len(parts) > 1 and parts[0] in ['mu', 'hu']:
+                organ = parts[1]
+            else:
+                organ = parts[0] if parts else 'unknown'
             
             if organ not in organ_results:
                 organ_results[organ] = {'predictions': [], 'actuals': []}
-        
-        # Get predictions and actuals for this fold
-        pred_idx = 0
-        for sample_id in test_samples:
-            organ = sample_id.split('_')[0] if '_' in sample_id else 'unknown'
             
-            if pred_idx < len(fold_data['predictions']):
-                organ_results[organ]['predictions'].append(fold_data['predictions'][pred_idx])
-                organ_results[organ]['actuals'].append(fold_data['actuals'][pred_idx])
-                pred_idx += 1
+            if idx < len(predictions):
+                organ_results[organ]['predictions'].append(predictions[idx])
+                organ_results[organ]['actuals'].append(actuals[idx])
     
     # Compute statistics per organ
     organ_stats = {}
@@ -207,13 +217,18 @@ def plot_organ_performance(organ_stats, output_dir):
 
 def plot_fold_performance(results, output_dir):
     """Plot performance across folds."""
-    n_folds = len(results['folds'])
+    fold_keys = [k for k in results.keys() if k.startswith('split_')]
+    n_folds = len(fold_keys)
     fold_maes = []
     fold_corr_medians = []
     
-    for fold_idx, fold_data in enumerate(results['folds']):
-        pred = np.vstack(fold_data['predictions'])
-        actual = np.vstack(fold_data['actuals'])
+    for fold_key in sorted(fold_keys):
+        fold_data = results[fold_key]
+        pred = fold_data.get('preds', np.array([]))
+        actual = fold_data.get('y', np.array([]))
+        
+        if len(pred) == 0 or len(actual) == 0:
+            continue
         
         # Compute MAE
         mae = np.mean(np.abs(pred - actual))
@@ -283,25 +298,35 @@ def main():
     with open(args.results_file, 'rb') as f:
         results = pickle.load(f)
     
-    # Load reference file
+    # Load reference file for organ info
     print(f"Loading reference from {args.reference_file}...")
-    reference_df = pd.read_csv(args.reference_file)
+    reference_df = pd.read_csv(args.reference_file, low_memory=False)
     
-    # Get gene names (from first row, skip sample_id column)
-    gene_names = reference_df.columns[1:].tolist()
+    # Get gene names from results
+    gene_names = results.get('genes', [])
+    
+    # Count folds
+    fold_keys = [k for k in results.keys() if k.startswith('split_')]
+    n_folds = len(fold_keys)
+    
     print(f"Number of genes: {len(gene_names)}")
-    print(f"Number of folds: {len(results['folds'])}")
+    print(f"Number of folds: {n_folds}")
     
     # Aggregate predictions and actuals across all folds
     all_predictions = []
     all_actuals = []
     
-    for fold_idx, fold_data in enumerate(results['folds']):
-        fold_pred = np.vstack(fold_data['predictions'])
-        fold_actual = np.vstack(fold_data['actuals'])
-        all_predictions.append(fold_pred)
-        all_actuals.append(fold_actual)
-        print(f"  Fold {fold_idx}: {fold_pred.shape[0]} test samples")
+    for fold_key in sorted(fold_keys):
+        fold_data = results[fold_key]
+        fold_pred = fold_data.get('preds', np.array([]))
+        fold_actual = fold_data.get('y', np.array([]))
+        
+        if len(fold_pred) > 0 and len(fold_actual) > 0:
+            all_predictions.append(fold_pred)
+            all_actuals.append(fold_actual)
+            print(f"  {fold_key}: {fold_pred.shape[0]} test samples")
+        else:
+            print(f"  {fold_key}: No data")
     
     all_predictions = np.vstack(all_predictions)
     all_actuals = np.vstack(all_actuals)
