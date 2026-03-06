@@ -60,7 +60,7 @@ def analyze_by_organ(results, reference_df):
         # Get test sample IDs
         sample_ids = split_data.get('sample_ids', [])
         predictions = split_data.get('preds', np.array([]))
-        actuals = split_data.get('y', np.array([]))
+        actuals = split_data.get('real', np.array([]))  # Changed from 'y' to 'real'
         
         # Match to organ
         for idx, sample_id in enumerate(sample_ids):
@@ -228,7 +228,7 @@ def plot_fold_performance(results, output_dir):
     for fold_key in sorted(fold_keys):
         fold_data = results[fold_key]
         pred = fold_data.get('preds', np.array([]))
-        actual = fold_data.get('y', np.array([]))
+        actual = fold_data.get('real', np.array([]))  # Changed from 'y' to 'real'
         
         if len(pred) == 0 or len(actual) == 0:
             continue
@@ -339,14 +339,14 @@ def main():
     for fold_key in sorted(fold_keys):
         fold_data = results[fold_key]
         fold_pred = fold_data.get('preds', np.array([]))
-        fold_actual = fold_data.get('y', np.array([]))
+        fold_actual = fold_data.get('real', np.array([]))  # Changed from 'y' to 'real'
         
         if len(fold_pred) > 0 and len(fold_actual) > 0:
             all_predictions.append(fold_pred)
             all_actuals.append(fold_actual)
             print(f"  {fold_key}: {fold_pred.shape[0]} test samples, shape {fold_pred.shape}")
         else:
-            print(f"  {fold_key}: No data (preds: {fold_pred.shape if hasattr(fold_pred, 'shape') else 'empty'}, y: {fold_actual.shape if hasattr(fold_actual, 'shape') else 'empty'})")
+            print(f"  {fold_key}: No data (preds: {fold_pred.shape if hasattr(fold_pred, 'shape') else 'empty'}, real: {fold_actual.shape if hasattr(fold_actual, 'shape') else 'empty'})")
     
     if len(all_predictions) == 0:
         print("\nERROR: No test data found in results file!")
