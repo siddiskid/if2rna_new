@@ -1,10 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=eval_if2rna
-#SBATCH --time=0:30:00
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=16G
-#SBATCH --output=logs/eval_%j.out
-#SBATCH --error=logs/eval_%j.err
+#SBATCH --account=st-singha53-1-gpu
+#SBATCH --job-name=if2rna_train
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --gres=gpu:1
+#SBATCH --time=40:00:00
+#SBATCH --mem=32G
+#SBATCH --output=logs/train_%j.out
+#SBATCH --error=logs/train_%j.err
 
 # Evaluation script for IF2RNA model
 # Can be run interactively or submitted with sbatch
