@@ -9,7 +9,10 @@ Analyzes test_results.pkl to compute:
 """
 
 import os
+import warnings
 os.environ['MPLCONFIGDIR'] = '/tmp/matplotlib_config'
+os.environ['FONTCONFIG_PATH'] = '/tmp'
+warnings.filterwarnings('ignore', category=UserWarning)
 
 import pickle
 import numpy as np
@@ -298,8 +301,12 @@ def main():
     with open(args.results_file, 'rb') as f:
         results = pickle.load(f)
     
+    print(f"\nResults structure:")
+    print(f"  Type: {type(results)}")
+    print(f"  Keys: {list(results.keys())}")
+    
     # Load reference file for organ info
-    print(f"Loading reference from {args.reference_file}...")
+    print(f"\nLoading reference from {args.reference_file}...")
     reference_df = pd.read_csv(args.reference_file, low_memory=False)
     
     # Get gene names from results
@@ -309,8 +316,21 @@ def main():
     fold_keys = [k for k in results.keys() if k.startswith('split_')]
     n_folds = len(fold_keys)
     
-    print(f"Number of genes: {len(gene_names)}")
+    print(f"\nNumber of genes: {len(gene_names)}")
     print(f"Number of folds: {n_folds}")
+    
+    # Debug: check first fold structure
+    if fold_keys:
+        first_key = fold_keys[0]
+        print(f"\nFirst fold ({first_key}) structure:")
+        print(f"  Keys: {list(results[first_key].keys())}")
+        for k, v in results[first_key].items():
+            if isinstance(v, np.ndarray):
+                print(f"  {k}: shape {v.shape}, dtype {v.dtype}")
+            elif isinstance(v, list):
+                print(f"  {k}: list of length {len(v)}")
+            else:
+                print(f"  {k}: {type(v)}")
     
     # Aggregate predictions and actuals across all folds
     all_predictions = []
@@ -324,9 +344,14 @@ def main():
         if len(fold_pred) > 0 and len(fold_actual) > 0:
             all_predictions.append(fold_pred)
             all_actuals.append(fold_actual)
-            print(f"  {fold_key}: {fold_pred.shape[0]} test samples")
+            print(f"  {fold_key}: {fold_pred.shape[0]} test samples, shape {fold_pred.shape}")
         else:
-            print(f"  {fold_key}: No data")
+            print(f"  {fold_key}: No data (preds: {fold_pred.shape if hasattr(fold_pred, 'shape') else 'empty'}, y: {fold_actual.shape if hasattr(fold_actual, 'shape') else 'empty'})")
+    
+    if len(all_predictions) == 0:
+        print("\nERROR: No test data found in results file!")
+        print(f"Available keys in results: {list(results.keys())}")
+        return
     
     all_predictions = np.vstack(all_predictions)
     all_actuals = np.vstack(all_actuals)
