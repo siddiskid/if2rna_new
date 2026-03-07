@@ -61,7 +61,7 @@ mkdir -p results/sequoia
 # Configuration
 REF_FILE="data/metadata/tcga_reference.csv"
 GENE_LIST="sequoia-pub/examples/gene_list.csv"
-WSI_PATH="data/raw/tcga_slides"
+WSI_PATH="data/hne_data/raw/images"  # H&E slides location
 FEAT_TYPE="uni"
 CANCER_TYPE="BRCA"  # Change to your cancer type (BRCA, COAD, GBMLGG, etc.)
 FOLD=0  # Start with fold 0
