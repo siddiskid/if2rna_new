@@ -60,13 +60,27 @@ def download_uni():
             dynamic_img_size=True
         )
         
-        # Get cache location
-        from huggingface_hub import scan_cache_dir
-        cache_info = scan_cache_dir()
-        
         print("\n✓ UNI model downloaded successfully!")
-        print(f"\nCache location: {cache_info.cache_dir}")
-        print(f"Total size: {cache_info.size_on_disk / (1024**3):.2f} GB")
+        
+        # Try to get cache location (optional)
+        try:
+            import os
+            cache_dir = os.path.expanduser("~/.cache/huggingface/hub")
+            if os.path.exists(cache_dir):
+                print(f"\nCache location: {cache_dir}")
+                # Try to find UNI model directory
+                uni_dirs = [d for d in os.listdir(cache_dir) if 'mahmood' in d.lower() and 'uni' in d.lower()]
+                if uni_dirs:
+                    uni_path = os.path.join(cache_dir, uni_dirs[0])
+                    # Get size
+                    total_size = 0
+                    for dirpath, dirnames, filenames in os.walk(uni_path):
+                        for f in filenames:
+                            fp = os.path.join(dirpath, f)
+                            total_size += os.path.getsize(fp)
+                    print(f"Model size: {total_size / (1024**3):.2f} GB")
+        except:
+            pass  # Cache info is optional
         
         # Show UNI model info
         print("\nModel Info:")
