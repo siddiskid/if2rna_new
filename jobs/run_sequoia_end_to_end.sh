@@ -48,6 +48,13 @@ echo "[Setup] Loading required modules..."
 module load gcc/9.4.0
 module load openslide/3.4.1
 
+# Export library paths explicitly
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(module show openslide/3.4.1 2>&1 | grep LIBRARY_PATH | cut -d'"' -f2)
+
+# Verify OpenSlide is accessible
+echo "Checking OpenSlide library..."
+ldconfig -p | grep openslide || echo "OpenSlide not in ldconfig, but module loaded"
+
 # Activate virtual environment
 echo ""
 echo "[Setup] Activating virtual environment..."
@@ -200,10 +207,7 @@ else
         --feature_dir data/processed/features \
         --gene_list $GENE_LIST \
         --output_dir results/sequoia \
-        --feat_type $FEAT_TYPE \
-        --fold $FOLD \
-        --cancer_type $CANCER_TYPE \
-        --batch_size 32
+        --feat_type $FEAT_TYPE
     
     if [ $? -eq 0 ]; then
         echo ""
