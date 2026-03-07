@@ -89,6 +89,45 @@ echo "  Fold: $FOLD"
 echo ""
 
 ################################################################################
+# Step 0: Ensure UNI Model is Available
+################################################################################
+
+if [ "$FEAT_TYPE" = "uni" ]; then
+    echo "========================================================================"
+    echo "[Step 0/4] UNI Model Check"
+    echo "========================================================================"
+    echo ""
+    
+    if [ -d "models/uni" ] && [ -f "models/uni/pytorch_model.bin" ]; then
+        echo "✓ UNI model already exists at models/uni"
+    else
+        echo "Downloading UNI model..."
+        # Try to download to models/uni
+        python scripts/download_uni_model.py --output_dir models/uni 2>/dev/null
+        
+        if [ $? -ne 0 ]; then
+            echo "Direct download failed, trying alternative location..."
+            # Download to /tmp and copy
+            python scripts/download_uni_model.py --output_dir /tmp/uni_model
+            if [ $? -eq 0 ]; then
+                mkdir -p models/uni
+                cp -r /tmp/uni_model/uni/* models/uni/ 2>/dev/null || cp -r /tmp/uni_model/* models/uni/
+                rm -rf /tmp/uni_model
+                echo "✓ UNI model downloaded and copied to models/uni"
+            else
+                echo "✗ UNI model download failed!"
+                echo "Please download manually on login node:"
+                echo "  python scripts/download_uni_model.py --output_dir models/uni"
+                exit 1
+            fi
+        else
+            echo "✓ UNI model downloaded successfully"
+        fi
+    fi
+    echo ""
+fi
+
+################################################################################
 # Step 1: Preprocessing (Patches + Features + K-means)
 ################################################################################
 
@@ -139,7 +178,12 @@ echo ""
 CHECKPOINT_MODEL="logs/.checkpoint_model_downloaded"
 MODEL_DIR="models/sequoia/${CANCER_TYPE,,}-${FOLD}"
 
-if [ -f "$CHECKPOINT_MODEL" ]; then
+# Check if model already exists
+if [ -d "$MODEL_DIR" ] && [ -f "$MODEL_DIR/model.pt" ]; then
+    echo "[Step 2] SEQUOIA model already exists"
+    echo "  Model directory: $MODEL_DIR"
+    touch $CHECKPOINT_MODEL
+elif [ -f "$CHECKPOINT_MODEL" ]; then
     echo "[Step 2] SEQUOIA model already downloaded (checkpoint found)"
     echo "  Model directory: $MODEL_DIR"
 else
@@ -158,8 +202,8 @@ else
     unset HF_HUB_OFFLINE
     
     python scripts/download_sequoia_model.py \
-        --cancer_type $CANCER_TYPE \
-        --fold $FOLD \
+        --cancer_types $CANCER_TYPE \
+        --folds $FOLD \
         --output_dir models/sequoia
     
     if [ $? -eq 0 ]; then
@@ -239,10 +283,11 @@ echo "  Reference: $REF_FILE"
 echo ""
 
 python scripts/evaluate_predictions.py \
-    --predictions_file $PREDICTIONS_FILE \
+    --predictions_dir results/sequoia \
     --gene_list $GENE_LIST \
-    --reference_file $REF_FILE \
-    --output_dir results/sequoia
+    --reference $REF_FILE \
+    --output_dir results/sequoia \
+    --folds $FOLD
 
 if [ $? -eq 0 ]; then
     echo ""
