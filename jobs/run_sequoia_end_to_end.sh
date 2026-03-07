@@ -42,6 +42,12 @@ echo ""
 # GPU info
 nvidia-smi
 
+# Load required modules
+echo ""
+echo "[Setup] Loading required modules..."
+module load gcc/9.4.0
+module load openslide/3.4.1
+
 # Activate virtual environment
 echo ""
 echo "[Setup] Activating virtual environment..."
