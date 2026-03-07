@@ -99,7 +99,7 @@ else
         --wsi_path $WSI_PATH \
         --output_dir data/processed \
         --feat_type $FEAT_TYPE \
-        --steps all \
+        --steps patches features kmeans \
         --patch_size 256 \
         --max_patches_per_slide 2000 \
         --max_patches_for_features 4000 \
