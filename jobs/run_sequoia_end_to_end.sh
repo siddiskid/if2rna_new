@@ -101,8 +101,8 @@ else
         --feat_type $FEAT_TYPE \
         --steps all \
         --patch_size 256 \
-        --max_patches 4000 \
         --max_patches_per_slide 2000 \
+        --max_patches_for_features 4000 \
         --n_clusters 100
     
     if [ $? -eq 0 ]; then
