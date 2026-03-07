@@ -172,53 +172,31 @@ fi
 echo ""
 
 ################################################################################
-# Step 2: Download SEQUOIA Model
+# Step 2: Verify SEQUOIA Model Exists
 ################################################################################
 
-CHECKPOINT_MODEL="logs/.checkpoint_model_downloaded"
 MODEL_DIR="models/sequoia/${CANCER_TYPE,,}-${FOLD}"
 
-# Check if model already exists
+echo "========================================================================"
+echo "[Step 2/4] SEQUOIA Model Verification"
+echo "========================================================================"
+echo ""
+
 if [ -d "$MODEL_DIR" ] && [ -f "$MODEL_DIR/model.pt" ]; then
-    echo "[Step 2] SEQUOIA model already exists"
-    echo "  Model directory: $MODEL_DIR"
-    touch $CHECKPOINT_MODEL
-elif [ -f "$CHECKPOINT_MODEL" ]; then
-    echo "[Step 2] SEQUOIA model already downloaded (checkpoint found)"
-    echo "  Model directory: $MODEL_DIR"
+    echo "✓ SEQUOIA model found at: $MODEL_DIR"
+    ls -lh "$MODEL_DIR"
+elif [ -d "$MODEL_DIR" ]; then
+    echo "✓ Model directory exists: $MODEL_DIR"
+    echo "Contents:"
+    ls -lh "$MODEL_DIR"
 else
-    echo "========================================================================"
-    echo "[Step 2/4] Download SEQUOIA Model"
-    echo "========================================================================"
+    echo "✗ Model not found at: $MODEL_DIR"
+    echo "Available models:"
+    ls -lh models/sequoia/
     echo ""
-    
-    echo "[2.1] Downloading pretrained SEQUOIA model..."
-    echo "  Cancer type: $CANCER_TYPE"
-    echo "  Fold: $FOLD"
-    echo "  Destination: $MODEL_DIR"
-    echo ""
-    
-    # Temporarily enable internet for HuggingFace download
-    unset HF_HUB_OFFLINE
-    
-    python scripts/download_sequoia_model.py \
-        --cancer_types $CANCER_TYPE \
-        --folds $FOLD \
-        --output_dir models/sequoia
-    
-    if [ $? -eq 0 ]; then
-        echo ""
-        echo "✓ Model download complete!"
-        touch $CHECKPOINT_MODEL
-        echo "  Checkpoint saved: $CHECKPOINT_MODEL"
-    else
-        echo ""
-        echo "✗ Model download failed! Check logs above."
-        exit 1
-    fi
-    
-    # Re-enable offline mode
-    export HF_HUB_OFFLINE=1
+    echo "Error: Model ${CANCER_TYPE,,}-${FOLD} does not exist!"
+    echo "Available models are listed above."
+    exit 1
 fi
 
 echo ""
