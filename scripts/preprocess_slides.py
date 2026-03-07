@@ -118,22 +118,20 @@ class SEQUOIAPreprocessor:
                               max_patches: int = 4000) -> bool:
         """Step 2: Extract features using ResNet or UNI
         
-        Note: If feat_type='uni' but UNI model not found, will automatically
-        fall back to ImageNet ViT-Large (1024 dims, compatible with SEQUOIA)
+        UNI is loaded directly from Hugging Face Hub (MahmoodLab/uni).
+        Requires: Accept license at huggingface.co/MahmoodLab/uni and login via huggingface-cli.
         """
         print("\n" + "="*70)
         print(f"[Step 2/3] Feature Extraction (feat_type: {feat_type})")
         print("="*70)
         
         if feat_type == "uni":
-            print(f"\n⚠️  Note: Will use ImageNet ViT-Large if UNI not available")
-            print("   This allows testing pretrained SEQUOIA models without UNI access")
-            print("   Results will be suboptimal compared to proper UNI features\n")
-        
-        if feat_type == "uni" and uni_model_dir:
-            print(f"\n⚠ Note: UNI model requires manual download from:")
-            print("   https://github.com/mahmoodlab/UNI")
-            print(f"   Model directory: {uni_model_dir}\n")
+            print(f"\n✓ Using UNI (Universal histopathology foundation model)")
+            print("  Model: MahmoodLab/uni from Hugging Face")
+            print("  Output: 1024-dimensional features")
+            print("\n  Prerequisites:")
+            print("  1. Accept license: https://huggingface.co/MahmoodLab/uni")
+            print("  2. Login: huggingface-cli login\n")
         
         cmd = [
             "python", str(self.features_script),

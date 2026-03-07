@@ -58,14 +58,43 @@ if __name__ == '__main__':
     if args.feat_type == 'resnet':
         model = resnet50(pretrained=True).to(device)
         model.eval()
+    elif args.feat_type == 'uni':
+        # Load UNI model from Hugging Face
+        print("Loading UNI model from Hugging Face (mahmoodlab/uni)...")
+        
+        # Try offline first (for HPC GPU nodes without internet)
+        import os
+        os.environ.setdefault('HF_HUB_OFFLINE', '1')
+        
+        try:
+            model = timm.create_model(
+                "hf-hub:MahmoodLab/uni",
+                pretrained=True,
+                init_values=1e-5,
+                dynamic_img_size=True
+            )
+            model.to(device)
+            model.eval()
+            print("✓ UNI model loaded from cache")
+        except Exception as e:
+            error_msg = str(e)
+            
+            # Check if it's an offline/cache error
+            if 'offline' in error_msg.lower() or 'connection' in error_msg.lower() or 'not found' in error_msg.lower():
+                print(f"\n✗ Error: UNI model not found in cache")
+                print("\nYou're running in offline mode (no internet on compute node).")
+                print("\nSolution:")
+                print("1. On LOGIN NODE, run: python scripts/download_uni_model.py")
+                print("2. This will download and cache the model")
+                print("3. Then resubmit your GPU job")
+            else:
+                print(f"\n✗ Failed to load UNI model: {e}")
+                print("  Make sure you have accepted the license at:")
+                print("  https://huggingface.co/MahmoodLab/uni")
+                print("  And logged in via: huggingface-cli login")
+            raise
     else:
-        local_dir = "" # add dir for saved model
-        model = timm.create_model("vit_large_patch16_224", img_size=224, patch_size=16, 
-                                    init_values=1e-5, num_classes=0, dynamic_img_size=True)
-        model.load_state_dict(torch.load(os.path.join(local_dir, 
-                                    "pytorch_model.bin"), map_location="cpu"), strict=True)
-        model.to(device)
-        model.eval()
+        raise ValueError(f"Unknown feat_type: {args.feat_type}. Use 'resnet' or 'uni'")
     
     print('Loading dataset...')
 

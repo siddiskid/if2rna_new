@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-SEQUOIA Preprocessing using ImageNet ViT-Large (stopgap until UNI access)
+SEQUOIA Preprocessing using UNI (Universal Histopathology Foundation Model)
 
-This uses standard ImageNet-pretrained ViT-Large which outputs 1024 dims,
-matching the expected input for pretrained SEQUOIA models.
+UNI is a histopathology foundation model from Mahmood Lab trained on 100M images.
+This uses UNI which outputs 1024 dims, matching the expected input for SEQUOIA models.
 
 Usage:
-    python preprocess_with_vit.py --ref_file data/metadata/reference.csv
+    python preprocess_with_vit.py --ref_file data/metadata/reference.csv --feat_type uni
 """
 
 import argparse
@@ -23,6 +23,8 @@ def main():
     parser.add_argument('--feature_path', type=str, default='data/processed/features')
     parser.add_argument('--sequoia_dir', type=str, default='sequoia-pub')
     parser.add_argument('--max_patches', type=int, default=4000)
+    parser.add_argument('--feat_type', type=str, default='uni', choices=['uni', 'resnet'],
+                       help='Feature extractor: uni (recommended) or resnet')
     args = parser.parse_args()
     
     sequoia_dir = Path(args.sequoia_dir)
@@ -50,16 +52,24 @@ def main():
     subprocess.run(cmd1, check=True)
     
     print("\n" + "="*70)
-    print("STEP 2: Extract Features with ImageNet ViT-Large")
-    print("="*70)
-    print("\n⚠️  Using ImageNet ViT-Large (1024 dims) as UNI substitute")
-    print("   This is NOT histopathology-specific but allows testing")
-    print("   the pretrained SEQUOIA pipeline.\n")
+    if args.feat_type == 'uni':
+        print("STEP 2: Extract Features with UNI")
+        print("="*70)
+        print("\n✓ Using UNI (Universal histopathology foundation model)")
+        print("  Model: MahmoodLab/uni from Hugging Face")
+        print("  Output: 1024-dimensional features\n")
+        print("Note: You need to:")
+        print("  1. Accept license at https://huggingface.co/MahmoodLab/uni")
+        print("  2. Login via: huggingface-cli login\n")
+    else:
+        print("STEP 2: Extract Features with ResNet50")
+        print("="*70)
+        print("\n✓ Using ResNet50 (ImageNet pretrained)")
+        print("  Output: 2048-dimensional features\n")
     
-    # Modify the compute_features script to use standard ViT-Large
     cmd2 = [
         "python", str(features_script),
-        "--feat_type", "vit_imagenet",  # Custom flag
+        "--feat_type", args.feat_type,
         "--ref_file", args.ref_file,
         "--patch_data_path", args.patch_data_path,
         "--feature_path", args.feature_path,
@@ -67,16 +77,7 @@ def main():
     ]
     
     print(f"\nRunning: {' '.join(cmd2)}\n")
-    print("Note: You'll need to modify compute_features_hdf5.py")
-    print("      to support 'vit_imagenet' feat_type")
-    
-    print("\n" + "="*70)
-    print("ALTERNATIVE: Use CTransPath (better for histopathology)")
-    print("="*70)
-    print("\n1. Download CTransPath model:")
-    print("   https://drive.google.com/file/d/1DoDx_70_TLj98gTf6YTXnu4tFhsFocDX/view")
-    print("\n2. Save to: models/ctranspath/")
-    print("\n3. Modify compute_features_hdf5.py to load CTransPath")
+    subprocess.run(cmd2, check=True)
     
 
 if __name__ == "__main__":
