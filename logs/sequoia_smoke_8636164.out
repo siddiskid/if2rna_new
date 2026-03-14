@@ -1,0 +1,223 @@
+========================================================================
+SEQUOIA Smoke Test
+========================================================================
+Job ID: 8636164
+Node: se293
+Started at: Sat Mar 14 15:53:42 PDT 2026
+========================================================================
+[Setup] Activating environment
+Configuration:
+  Project dir: /scratch/st-singha53-1/schiluku/if2rna_new
+  Reference: data/metadata/tcga_reference.csv
+  Smoke ref: data/metadata/tcga_reference_smoke.csv
+  WSI path: data/hne_data/raw
+  Gene list: sequoia-pub/examples/gene_list.csv
+  Feature type: uni
+  Cancer/Fold: BRCA/0
+  Smoke samples: 10
+[1/5] Building smoke reference file
+[2/5] Preprocessing smoke subset
+Found 0 slides
+----------
+Args for this experiment 
+
+Namespace(feat_type='uni', ref_file='data/metadata/tcga_reference_smoke.csv', patch_data_path='data/processed/patches', feature_path='data/processed/features', max_patch_number=400, seed=99, tcga_projects=None, start=0, end=None)
+----------
+Loading UNI model from Hugging Face (mahmoodlab/uni)...
+✓ UNI model loaded from cache
+Loading dataset...
+Number of slides = 10
+[Errno 2] Unable to synchronously create file (unable to open file: name = 'data/processed/features/BRCA/TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533/TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533.h5', errno = 2, error message = 'No such file or directory', flags = 13, o_flags = 242)
+TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533
+Not exist data/processed/patches/TCGA-A7-A0CD-01Z-00-DX1
+Not exist data/processed/patches/TCGA-A8-A09K-01Z-00-DX1
+Not exist data/processed/patches/TCGA-AC-A62V-01Z-00-DX1
+Not exist data/processed/patches/TCGA-AC-A8OP-01Z-00-DX1
+Not exist data/processed/patches/TCGA-AQ-A0Y5-01Z-00-DX1
+Not exist data/processed/patches/TCGA-AR-A24Q-01Z-00-DX1
+Not exist data/processed/patches/TCGA-C8-A1HI-01Z-00-DX1
+Not exist data/processed/patches/TCGA-E2-A14P-01Z-00-DX1
+----------
+Args for this experiment 
+
+Namespace(ref_file='data/metadata/tcga_reference_smoke.csv', patch_data_path='data/processed/patches', feature_path='data/processed/features', num_clusters=100, tcga_projects=None, start=0, end=None, gtex=False, gtex_tissue=None, seed=99)
+----------
+Total number of slides = 10
+New number of slides = 10
+Cannot open file data/processed/features/BRCA/TCGA-5L-AAT1-01Z-00-DX1.F3449A5B-2AC4-4ED7-BF44-4C8946CDB47D
+Cannot open file data/processed/features/BRCA/TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533
+Cannot open file data/processed/features/BRCA/TCGA-A7-A0CD-01Z-00-DX1.F045B9C8-049C-41BF-8432-EF89F236D34D
+Cannot open file data/processed/features/BRCA/TCGA-A8-A09K-01Z-00-DX1.41B2DF5F-C0E1-43BB-BAA5-2946A9EC4650
+Cannot open file data/processed/features/BRCA/TCGA-AC-A62V-01Z-00-DX1.2D8994FD-58B8-43C1-B99D-AA964E7DFD60
+Cannot open file data/processed/features/BRCA/TCGA-AC-A8OP-01Z-00-DX1.A2AF501D-7DCD-4BE7-93A4-EBCAF0C0D54E
+Cannot open file data/processed/features/BRCA/TCGA-AQ-A0Y5-01Z-00-DX1.f68f5b49-30fa-4fb6-bec6-5da9f6809d02
+Cannot open file data/processed/features/BRCA/TCGA-AR-A24Q-01Z-00-DX1.69DC7E35-DC0D-4F20-88DA-04C25F28628C
+Cannot open file data/processed/features/BRCA/TCGA-C8-A1HI-01Z-00-DX1.C6D0F8B8-55ED-477F-BAF7-AA05D0449CC8
+Cannot open file data/processed/features/BRCA/TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6
+Done!
+
+======================================================================
+SEQUOIA Preprocessing Pipeline
+======================================================================
+Reference file: data/metadata/tcga_reference_smoke.csv
+WSI directory: data/hne_data/raw
+Output directory: data/processed
+Steps to run: patch, features, kmeans
+Feature type: uni
+======================================================================
+
+[Verification] Checking setup...
+   ✓ All requirements verified
+
+======================================================================
+[Step 1/3] Patch Extraction
+======================================================================
+
+Running: python sequoia-pub/pre_processing/patch_gen_hdf5.py --ref_file data/metadata/tcga_reference_smoke.csv --wsi_path data/hne_data/raw --patch_path data/processed/patches --mask_path data/processed/masks --patch_size 256 --max_patches_per_slide 200 --parallel 0
+
+
+✓ Patch extraction complete!
+
+======================================================================
+[Step 2/3] Feature Extraction (feat_type: uni)
+======================================================================
+
+✓ Using UNI (Universal histopathology foundation model)
+  Model: MahmoodLab/uni from Hugging Face
+  Output: 1024-dimensional features
+
+  Prerequisites:
+  1. Accept license: https://huggingface.co/MahmoodLab/uni
+  2. Login: huggingface-cli login
+
+
+Running: python sequoia-pub/pre_processing/compute_features_hdf5.py --feat_type uni --ref_file data/metadata/tcga_reference_smoke.csv --patch_data_path data/processed/patches --feature_path data/processed/features --max_patch_number 400
+
+
+✓ Feature extraction complete!
+
+======================================================================
+[Step 3/3] K-means Clustering (n_clusters: 100)
+======================================================================
+
+Running: python sequoia-pub/pre_processing/kmean_features.py --ref_file data/metadata/tcga_reference_smoke.csv --patch_data_path data/processed/patches --feature_path data/processed/features --num_clusters 100
+
+
+✓ K-means clustering complete!
+
+======================================================================
+✓ Preprocessing Pipeline Complete!
+======================================================================
+
+Output directory: data/processed
+  Patches: data/processed/patches
+  Features: data/processed/features
+  Masks: data/processed/masks
+
+Next step: Run SEQUOIA inference
+  python scripts/run_sequoia_inference.py
+======================================================================
+
+[3/5] Downloading model
+
+============================================================
+SEQUOIA Model Downloader
+============================================================
+Cancer types: BRCA
+Folds: 0
+Output directory: models/sequoia/sequoia
+============================================================
+
+[1/3] Checking HuggingFace authentication...
+   ⚠ Not logged in (this may be fine for public models)
+   If download fails, login with: huggingface-cli login
+
+[2/3] Downloading models...
+
+   Downloading: gevaertlab/sequoia-brca-0
+   ✗ Download failed: An error happened while trying to locate the files on the Hub and we cannot find the appropriate snapshot folder for the specified revision on the local disk. Please check your internet connection and try again.
+
+   Downloading gene list...
+   ✗ Could not download gene list: HTTPSConnectionPool(host='raw.githubusercontent.com', port=443): Max retries exceeded with url: /gevaertlab/sequoia-pub/master/evaluation/gene_list.csv (Caused by NewConnectionError("HTTPSConnection(host='raw.githubusercontent.com', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+      Download manually from: https://raw.githubusercontent.com/gevaertlab/sequoia-pub/master/evaluation/gene_list.csv
+
+[3/3] Verifying downloads...
+   ✗ BRCA-0: Not downloaded
+
+   Manifest saved: models/sequoia/download_manifest.json
+
+============================================================
+Download Summary
+============================================================
+Total models requested: 1
+Successfully downloaded: 0
+Failed: 1
+
+✗ Failed downloads:
+   • BRCA-0
+
+============================================================
+Models location: models/sequoia/sequoia
+============================================================
+
+[4/5] Running inference
+Using device: cuda
+
+Loading gene list...
+   ✓ Loaded 20821 genes
+
+======================================================================
+Processing model: brca-0
+======================================================================
+
+[1/4] Loading SEQUOIA model...
+   Loading from local path: models/sequoia/brca-0
+Loading weights from local directory
+   ✓ Model loaded successfully
+
+[2/4] Running inference...
+   Processing 10 slides
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-5L-AAT1-01Z-00-DX1.F3449A5B-2AC4-4ED7-BF44-4C8946CDB47D/TCGA-5L-AAT1-01Z-00-DX1.F3449A5B-2AC4-4ED7-BF44-4C8946CDB47D.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533/TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-A7-A0CD-01Z-00-DX1.F045B9C8-049C-41BF-8432-EF89F236D34D/TCGA-A7-A0CD-01Z-00-DX1.F045B9C8-049C-41BF-8432-EF89F236D34D.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-A8-A09K-01Z-00-DX1.41B2DF5F-C0E1-43BB-BAA5-2946A9EC4650/TCGA-A8-A09K-01Z-00-DX1.41B2DF5F-C0E1-43BB-BAA5-2946A9EC4650.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-AC-A62V-01Z-00-DX1.2D8994FD-58B8-43C1-B99D-AA964E7DFD60/TCGA-AC-A62V-01Z-00-DX1.2D8994FD-58B8-43C1-B99D-AA964E7DFD60.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-AC-A8OP-01Z-00-DX1.A2AF501D-7DCD-4BE7-93A4-EBCAF0C0D54E/TCGA-AC-A8OP-01Z-00-DX1.A2AF501D-7DCD-4BE7-93A4-EBCAF0C0D54E.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-AQ-A0Y5-01Z-00-DX1.f68f5b49-30fa-4fb6-bec6-5da9f6809d02/TCGA-AQ-A0Y5-01Z-00-DX1.f68f5b49-30fa-4fb6-bec6-5da9f6809d02.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-AR-A24Q-01Z-00-DX1.69DC7E35-DC0D-4F20-88DA-04C25F28628C/TCGA-AR-A24Q-01Z-00-DX1.69DC7E35-DC0D-4F20-88DA-04C25F28628C.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-C8-A1HI-01Z-00-DX1.C6D0F8B8-55ED-477F-BAF7-AA05D0449CC8/TCGA-C8-A1HI-01Z-00-DX1.C6D0F8B8-55ED-477F-BAF7-AA05D0449CC8.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6/TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6.h5
+   ✓ Processed 0 slides successfully
+   ✗ No predictions generated for brca-0
+
+======================================================================
+✓ Inference Complete!
+======================================================================
+
+Results saved to: results/sequoia
+Processed 0 model(s)
+======================================================================
+
+[5/5] Evaluating predictions
+
+================================================================================
+Processing predictions_brca-0
+================================================================================
+Loading gene list...
+  20820 genes
+Loading predictions...
+  Shape: (10, 20823)
+Renaming 0 columns...
+  Saved fixed predictions to results/sequoia/predictions_brca-0_fixed.csv
+Loading reference data...
+  Shape: (10, 59430)
+Merged data shape: (10, 80252)
+  10 samples matched
+  0 common genes found
+ERROR: No common genes found!
+========================================================================
+Smoke test complete
+Predictions: results/sequoia/predictions_brca-0.csv
+Correlations: results/sequoia/predictions_brca-0_correlations.csv
+Finished at: Sat Mar 14 15:58:19 PDT 2026
+========================================================================

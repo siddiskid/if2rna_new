@@ -1,0 +1,11 @@
+Job started at: Thu Mar  5 18:44:37 PST 2026
+Running on node: se326
+Job ID: 8431057
+======================================================================
+IF2RNA Model Evaluation
+======================================================================
+
+Loading results from results/if2rna_models/baseline_resnet_log/test_results.pkl...
+Loading reference from data/metadata/if_reference.csv...
+Number of genes: 15836
+Job finished at: Thu Mar  5 18:44:54 PST 2026

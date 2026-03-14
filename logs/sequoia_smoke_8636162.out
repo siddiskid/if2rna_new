@@ -1,0 +1,18 @@
+========================================================================
+SEQUOIA Smoke Test
+========================================================================
+Job ID: 8636162
+Node: se293
+Started at: Sat Mar 14 15:49:41 PDT 2026
+========================================================================
+[Setup] Activating environment
+Configuration:
+  Project dir: /var/spool/slurmd
+  Reference: data/metadata/tcga_reference.csv
+  Smoke ref: data/metadata/tcga_reference_smoke.csv
+  WSI path: data/raw/tcga_slides
+  Gene list: sequoia-pub/examples/gene_list.csv
+  Feature type: uni
+  Cancer/Fold: BRCA/0
+  Smoke samples: 10
+ERROR: Reference file not found: data/metadata/tcga_reference.csv

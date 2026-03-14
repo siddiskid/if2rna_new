@@ -1,0 +1,12 @@
+mkdir -p failed for path /arc/home/schiluku/.config/matplotlib: [Errno 30] Read-only file system: '/arc/home/schiluku/.config/matplotlib'
+Matplotlib created a temporary cache directory at /tmp/slurm/8431057/matplotlib-9ac4je7f because there was an issue with the default path (/arc/home/schiluku/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+/scratch/st-singha53-1/schiluku/if2rna_new/if2rna_scripts/evaluate_if2rna.py:288: DtypeWarning: Columns (4) have mixed types. Specify dtype option on import or set low_memory=False.
+  reference_df = pd.read_csv(args.reference_file)
+Traceback (most recent call last):
+  File "/scratch/st-singha53-1/schiluku/if2rna_new/if2rna_scripts/evaluate_if2rna.py", line 432, in <module>
+    main()
+  File "/scratch/st-singha53-1/schiluku/if2rna_new/if2rna_scripts/evaluate_if2rna.py", line 293, in main
+    print(f"Number of folds: {len(results['folds'])}")
+KeyError: 'folds'
