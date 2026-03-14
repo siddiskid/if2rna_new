@@ -44,11 +44,6 @@ DEFAULT_PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_DIR="${PROJECT_DIR:-$DEFAULT_PROJECT_DIR}"
 cd "$PROJECT_DIR"
 
-mkdir -p logs
-mkdir -p data/processed/{patches,features,masks}
-mkdir -p models/sequoia
-mkdir -p results/sequoia
-
 # Configurable inputs
 REF_FILE="${REF_FILE:-data/metadata/tcga_reference.csv}"
 SMOKE_REF_FILE="${SMOKE_REF_FILE:-data/metadata/tcga_reference_smoke.csv}"

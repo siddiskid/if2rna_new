@@ -55,12 +55,6 @@ PROJECT_DIR="${PROJECT_DIR:-$DEFAULT_PROJECT_DIR}"
 cd "$PROJECT_DIR"
 echo "Working directory: $PWD"
 
-# Create required directories
-mkdir -p logs
-mkdir -p data/processed/{patches,features,masks}
-mkdir -p models/sequoia
-mkdir -p results/sequoia
-
 # Configuration
 REF_FILE="${REF_FILE:-data/metadata/tcga_reference.csv}"
 GENE_LIST="${GENE_LIST:-sequoia-pub/examples/gene_list.csv}"
