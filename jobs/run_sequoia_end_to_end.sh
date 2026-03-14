@@ -42,26 +42,42 @@ echo ""
 # GPU info
 nvidia-smi
 
+# Load required modules
+echo ""
+echo "[Setup] Loading required modules..."
+module load gcc/9.4.0
+module load openslide/3.4.1
+
+# Export library paths explicitly
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(module show openslide/3.4.1 2>&1 | grep LIBRARY_PATH | cut -d'"' -f2)
+
+# Verify OpenSlide is accessible
+echo "Checking OpenSlide library..."
+ldconfig -p | grep openslide || echo "OpenSlide not in ldconfig, but module loaded"
+
 # Activate virtual environment
 echo ""
 echo "[Setup] Activating virtual environment..."
-VENV_PATH="${VENV_PATH:-.venv/bin/activate}"
-source "$VENV_PATH"
+source .venv/bin/activate
 
-# Change to project directory (defaults to repo root from this script location)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_DIR="${PROJECT_DIR:-$DEFAULT_PROJECT_DIR}"
-cd "$PROJECT_DIR"
+# Change to project directory (adjust path as needed)
+PROJECT_DIR="/scratch/st-singha53-1/schiluku/if2rna_new"
+cd $PROJECT_DIR
 echo "Working directory: $PWD"
 
+# Create required directories
+mkdir -p logs
+mkdir -p data/processed/{patches,features,masks}
+mkdir -p models/sequoia
+mkdir -p results/sequoia
+
 # Configuration
-REF_FILE="${REF_FILE:-data/metadata/tcga_reference.csv}"
-GENE_LIST="${GENE_LIST:-sequoia-pub/examples/gene_list.csv}"
-WSI_PATH="${WSI_PATH:-data/raw/tcga_slides}"
-FEAT_TYPE="${FEAT_TYPE:-uni}"
-CANCER_TYPE="${CANCER_TYPE:-BRCA}"  # BRCA, COAD, GBMLGG, etc.
-FOLD="${FOLD:-0}"
+REF_FILE="data/metadata/tcga_reference.csv"
+GENE_LIST="sequoia-pub/examples/gene_list.csv"
+WSI_PATH="data/hne_data/raw/images"  # H&E slides location
+FEAT_TYPE="uni"
+CANCER_TYPE="BRCA"  # Change to your cancer type (BRCA, COAD, GBMLGG, etc.)
+FOLD=0  # Start with fold 0
 
 echo ""
 echo "Configuration:"
@@ -71,6 +87,45 @@ echo "  Feature type: $FEAT_TYPE"
 echo "  Cancer type: $CANCER_TYPE"
 echo "  Fold: $FOLD"
 echo ""
+
+################################################################################
+# Step 0: Ensure UNI Model is Available
+################################################################################
+
+if [ "$FEAT_TYPE" = "uni" ]; then
+    echo "========================================================================"
+    echo "[Step 0/4] UNI Model Check"
+    echo "========================================================================"
+    echo ""
+    
+    if [ -d "models/uni" ] && [ -f "models/uni/pytorch_model.bin" ]; then
+        echo "✓ UNI model already exists at models/uni"
+    else
+        echo "Downloading UNI model..."
+        # Try to download to models/uni
+        python scripts/download_uni_model.py --output_dir models/uni 2>/dev/null
+        
+        if [ $? -ne 0 ]; then
+            echo "Direct download failed, trying alternative location..."
+            # Download to /tmp and copy
+            python scripts/download_uni_model.py --output_dir /tmp/uni_model
+            if [ $? -eq 0 ]; then
+                mkdir -p models/uni
+                cp -r /tmp/uni_model/uni/* models/uni/ 2>/dev/null || cp -r /tmp/uni_model/* models/uni/
+                rm -rf /tmp/uni_model
+                echo "✓ UNI model downloaded and copied to models/uni"
+            else
+                echo "✗ UNI model download failed!"
+                echo "Please download manually on login node:"
+                echo "  python scripts/download_uni_model.py --output_dir models/uni"
+                exit 1
+            fi
+        else
+            echo "✓ UNI model downloaded successfully"
+        fi
+    fi
+    echo ""
+fi
 
 ################################################################################
 # Step 1: Preprocessing (Patches + Features + K-means)
@@ -96,7 +151,7 @@ else
         --wsi_path $WSI_PATH \
         --output_dir data/processed \
         --feat_type $FEAT_TYPE \
-        --steps patch features kmeans \
+        --steps patches features kmeans \
         --patch_size 256 \
         --max_patches_per_slide 2000 \
         --max_patches_for_features 4000 \
@@ -117,48 +172,31 @@ fi
 echo ""
 
 ################################################################################
-# Step 2: Download SEQUOIA Model
+# Step 2: Verify SEQUOIA Model Exists
 ################################################################################
 
-CHECKPOINT_MODEL="logs/.checkpoint_model_downloaded"
 MODEL_DIR="models/sequoia/${CANCER_TYPE,,}-${FOLD}"
 
-if [ -f "$CHECKPOINT_MODEL" ]; then
-    echo "[Step 2] SEQUOIA model already downloaded (checkpoint found)"
-    echo "  Model directory: $MODEL_DIR"
+echo "========================================================================"
+echo "[Step 2/4] SEQUOIA Model Verification"
+echo "========================================================================"
+echo ""
+
+if [ -d "$MODEL_DIR" ] && [ -f "$MODEL_DIR/model.pt" ]; then
+    echo "✓ SEQUOIA model found at: $MODEL_DIR"
+    ls -lh "$MODEL_DIR"
+elif [ -d "$MODEL_DIR" ]; then
+    echo "✓ Model directory exists: $MODEL_DIR"
+    echo "Contents:"
+    ls -lh "$MODEL_DIR"
 else
-    echo "========================================================================"
-    echo "[Step 2/4] Download SEQUOIA Model"
-    echo "========================================================================"
+    echo "✗ Model not found at: $MODEL_DIR"
+    echo "Available models:"
+    ls -lh models/sequoia/
     echo ""
-    
-    echo "[2.1] Downloading pretrained SEQUOIA model..."
-    echo "  Cancer type: $CANCER_TYPE"
-    echo "  Fold: $FOLD"
-    echo "  Destination: $MODEL_DIR"
-    echo ""
-    
-    # Temporarily enable internet for HuggingFace download
-    unset HF_HUB_OFFLINE
-    
-    python scripts/download_sequoia_model.py \
-        --cancer_types $CANCER_TYPE \
-        --folds $FOLD \
-        --output_dir models/sequoia
-    
-    if [ $? -eq 0 ]; then
-        echo ""
-        echo "✓ Model download complete!"
-        touch $CHECKPOINT_MODEL
-        echo "  Checkpoint saved: $CHECKPOINT_MODEL"
-    else
-        echo ""
-        echo "✗ Model download failed! Check logs above."
-        exit 1
-    fi
-    
-    # Re-enable offline mode
-    export HF_HUB_OFFLINE=1
+    echo "Error: Model ${CANCER_TYPE,,}-${FOLD} does not exist!"
+    echo "Available models are listed above."
+    exit 1
 fi
 
 echo ""
