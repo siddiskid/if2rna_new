@@ -45,11 +45,14 @@ nvidia-smi
 # Activate virtual environment
 echo ""
 echo "[Setup] Activating virtual environment..."
-source .venv/bin/activate
+VENV_PATH="${VENV_PATH:-.venv/bin/activate}"
+source "$VENV_PATH"
 
-# Change to project directory (adjust path as needed)
-PROJECT_DIR="/scratch/st-singha53-1/schiluku/if2rna_new"
-cd $PROJECT_DIR
+# Change to project directory (defaults to repo root from this script location)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_DIR="${PROJECT_DIR:-$DEFAULT_PROJECT_DIR}"
+cd "$PROJECT_DIR"
 echo "Working directory: $PWD"
 
 # Create required directories
@@ -59,12 +62,12 @@ mkdir -p models/sequoia
 mkdir -p results/sequoia
 
 # Configuration
-REF_FILE="data/metadata/tcga_reference.csv"
-GENE_LIST="sequoia-pub/examples/gene_list.csv"
-WSI_PATH="data/raw/tcga_slides"
-FEAT_TYPE="uni"
-CANCER_TYPE="BRCA"  # Change to your cancer type (BRCA, COAD, GBMLGG, etc.)
-FOLD=0  # Start with fold 0
+REF_FILE="${REF_FILE:-data/metadata/tcga_reference.csv}"
+GENE_LIST="${GENE_LIST:-sequoia-pub/examples/gene_list.csv}"
+WSI_PATH="${WSI_PATH:-data/raw/tcga_slides}"
+FEAT_TYPE="${FEAT_TYPE:-uni}"
+CANCER_TYPE="${CANCER_TYPE:-BRCA}"  # BRCA, COAD, GBMLGG, etc.
+FOLD="${FOLD:-0}"
 
 echo ""
 echo "Configuration:"
@@ -99,10 +102,10 @@ else
         --wsi_path $WSI_PATH \
         --output_dir data/processed \
         --feat_type $FEAT_TYPE \
-        --steps all \
+        --steps patch features kmeans \
         --patch_size 256 \
-        --max_patches 4000 \
         --max_patches_per_slide 2000 \
+        --max_patches_for_features 4000 \
         --n_clusters 100
     
     if [ $? -eq 0 ]; then
@@ -145,8 +148,8 @@ else
     unset HF_HUB_OFFLINE
     
     python scripts/download_sequoia_model.py \
-        --cancer_type $CANCER_TYPE \
-        --fold $FOLD \
+        --cancer_types $CANCER_TYPE \
+        --folds $FOLD \
         --output_dir models/sequoia
     
     if [ $? -eq 0 ]; then
@@ -194,10 +197,7 @@ else
         --feature_dir data/processed/features \
         --gene_list $GENE_LIST \
         --output_dir results/sequoia \
-        --feat_type $FEAT_TYPE \
-        --fold $FOLD \
-        --cancer_type $CANCER_TYPE \
-        --batch_size 32
+        --feat_type $FEAT_TYPE
     
     if [ $? -eq 0 ]; then
         echo ""
@@ -229,10 +229,11 @@ echo "  Reference: $REF_FILE"
 echo ""
 
 python scripts/evaluate_predictions.py \
-    --predictions_file $PREDICTIONS_FILE \
+    --predictions_dir results/sequoia \
     --gene_list $GENE_LIST \
-    --reference_file $REF_FILE \
-    --output_dir results/sequoia
+    --reference $REF_FILE \
+    --output_dir results/sequoia \
+    --folds $FOLD
 
 if [ $? -eq 0 ]; then
     echo ""
