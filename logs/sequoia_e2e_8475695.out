@@ -1,0 +1,290 @@
+========================================================================
+SEQUOIA End-to-End Pipeline
+========================================================================
+Job ID: 8475695
+Node: se267
+Started at: Sat Mar  7 01:59:55 PST 2026
+========================================================================
+
+Sat Mar  7 01:59:55 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-SXM2-32GB           On  |   00000000:3B:00.0 Off |                    0 |
+| N/A   34C    P0             43W /  300W |       0MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+[Setup] Loading required modules...
+Checking OpenSlide library...
+OpenSlide not in ldconfig, but module loaded
+
+[Setup] Activating virtual environment...
+Working directory: /scratch/st-singha53-1/schiluku/if2rna_new
+
+Configuration:
+  Reference file: data/metadata/tcga_reference.csv
+  WSI path: data/hne_data/raw/images
+  Feature type: uni
+  Cancer type: BRCA
+  Fold: 0
+
+========================================================================
+[Step 0/4] UNI Model Check
+========================================================================
+
+Downloading UNI model...
+
+======================================================================
+Downloading UNI Model from Hugging Face Hub
+======================================================================
+
+Checking prerequisites...
+✓ Hugging Face authentication found
+✓ timm version 1.0.25 installed
+
+----------------------------------------------------------------------
+Downloading UNI model (this may take a few minutes)...
+----------------------------------------------------------------------
+
+✓ UNI model downloaded successfully!
+
+Cache location: /home/brekhi/.cache/huggingface/hub
+Model size: 2.26 GB
+
+Model Info:
+  - Architecture: Vision Transformer Large
+  - Parameters: ~307M
+  - Input size: 224x224
+  - Output dims: 1024
+  - Training: 100M+ histopathology images
+
+======================================================================
+✓ Setup complete! You can now run GPU jobs offline.
+======================================================================
+
+Next steps:
+1. Submit GPU job: sbatch jobs/preprocess_slides.job
+2. The model will be loaded from cache (no internet needed)
+✓ UNI model downloaded successfully
+
+========================================================================
+[Step 1/4] Preprocessing Pipeline
+========================================================================
+
+[1.1] Starting SEQUOIA preprocessing (patches + features + kmeans)...
+Found 0 slides
+----------
+Args for this experiment 
+
+Namespace(feat_type='uni', ref_file='data/metadata/tcga_reference.csv', patch_data_path='data/processed/patches', feature_path='data/processed/features', max_patch_number=4000, seed=99, tcga_projects=None, start=0, end=None)
+----------
+Loading UNI model from Hugging Face (mahmoodlab/uni)...
+✓ UNI model loaded from cache
+Loading dataset...
+Number of slides = 10
+Not exist data/processed/patches/TCGA-5L-AAT1-01Z-00-DX1
+Not exist data/processed/patches/TCGA-A2-A0YM-01Z-00-DX1
+Not exist data/processed/patches/TCGA-A7-A0CD-01Z-00-DX1
+Not exist data/processed/patches/TCGA-A8-A09K-01Z-00-DX1
+Not exist data/processed/patches/TCGA-AC-A62V-01Z-00-DX1
+Not exist data/processed/patches/TCGA-AC-A8OP-01Z-00-DX1
+Not exist data/processed/patches/TCGA-AQ-A0Y5-01Z-00-DX1
+Not exist data/processed/patches/TCGA-AR-A24Q-01Z-00-DX1
+Not exist data/processed/patches/TCGA-C8-A1HI-01Z-00-DX1
+Not exist data/processed/patches/TCGA-E2-A14P-01Z-00-DX1
+----------
+Args for this experiment 
+
+Namespace(ref_file='data/metadata/tcga_reference.csv', patch_data_path='data/processed/patches', feature_path='data/processed/features', num_clusters=100, tcga_projects=None, start=0, end=None, gtex=False, gtex_tissue=None, seed=99)
+----------
+Total number of slides = 10
+New number of slides = 10
+Cannot open file data/processed/features/BRCA/TCGA-5L-AAT1-01Z-00-DX1.F3449A5B-2AC4-4ED7-BF44-4C8946CDB47D
+Cannot open file data/processed/features/BRCA/TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533
+Cannot open file data/processed/features/BRCA/TCGA-A7-A0CD-01Z-00-DX1.F045B9C8-049C-41BF-8432-EF89F236D34D
+Cannot open file data/processed/features/BRCA/TCGA-A8-A09K-01Z-00-DX1.41B2DF5F-C0E1-43BB-BAA5-2946A9EC4650
+Cannot open file data/processed/features/BRCA/TCGA-AC-A62V-01Z-00-DX1.2D8994FD-58B8-43C1-B99D-AA964E7DFD60
+Cannot open file data/processed/features/BRCA/TCGA-AC-A8OP-01Z-00-DX1.A2AF501D-7DCD-4BE7-93A4-EBCAF0C0D54E
+Cannot open file data/processed/features/BRCA/TCGA-AQ-A0Y5-01Z-00-DX1.f68f5b49-30fa-4fb6-bec6-5da9f6809d02
+Cannot open file data/processed/features/BRCA/TCGA-AR-A24Q-01Z-00-DX1.69DC7E35-DC0D-4F20-88DA-04C25F28628C
+Cannot open file data/processed/features/BRCA/TCGA-C8-A1HI-01Z-00-DX1.C6D0F8B8-55ED-477F-BAF7-AA05D0449CC8
+Cannot open file data/processed/features/BRCA/TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6
+Done!
+
+======================================================================
+SEQUOIA Preprocessing Pipeline
+======================================================================
+Reference file: data/metadata/tcga_reference.csv
+WSI directory: data/hne_data/raw/images
+Output directory: data/processed
+Steps to run: patches, features, kmeans
+Feature type: uni
+======================================================================
+
+[Verification] Checking setup...
+   ✓ All requirements verified
+
+======================================================================
+[Step 1/3] Patch Extraction
+======================================================================
+
+Running: python sequoia-pub/pre_processing/patch_gen_hdf5.py --ref_file data/metadata/tcga_reference.csv --wsi_path data/hne_data/raw/images --patch_path data/processed/patches --mask_path data/processed/masks --patch_size 256 --max_patches_per_slide 2000 --parallel 0
+
+
+✓ Patch extraction complete!
+
+======================================================================
+[Step 2/3] Feature Extraction (feat_type: uni)
+======================================================================
+
+✓ Using UNI (Universal histopathology foundation model)
+  Model: MahmoodLab/uni from Hugging Face
+  Output: 1024-dimensional features
+
+  Prerequisites:
+  1. Accept license: https://huggingface.co/MahmoodLab/uni
+  2. Login: huggingface-cli login
+
+
+Running: python sequoia-pub/pre_processing/compute_features_hdf5.py --feat_type uni --ref_file data/metadata/tcga_reference.csv --patch_data_path data/processed/patches --feature_path data/processed/features --max_patch_number 4000
+
+
+✓ Feature extraction complete!
+
+======================================================================
+[Step 3/3] K-means Clustering (n_clusters: 100)
+======================================================================
+
+Running: python sequoia-pub/pre_processing/kmean_features.py --ref_file data/metadata/tcga_reference.csv --patch_data_path data/processed/patches --feature_path data/processed/features --num_clusters 100
+
+
+✓ K-means clustering complete!
+
+======================================================================
+✓ Preprocessing Pipeline Complete!
+======================================================================
+
+Output directory: data/processed
+  Patches: data/processed/patches
+  Features: data/processed/features
+  Masks: data/processed/masks
+
+Next step: Run SEQUOIA inference
+  python scripts/run_sequoia_inference.py
+======================================================================
+
+
+✓ Preprocessing complete!
+  Checkpoint saved: logs/.checkpoint_preprocess_done
+
+========================================================================
+[Step 2/4] SEQUOIA Model Verification
+========================================================================
+
+✓ Model directory exists: models/sequoia/brca-0
+Contents:
+total 206M
+-rw-r----- 1 schiluku st-singha53-1-rw  333 Mar  1 17:27 README.md
+-rw-r----- 1 schiluku st-singha53-1-rw  188 Mar  1 17:27 config.json
+-rw-r----- 1 schiluku st-singha53-1-rw 206M Mar  1 17:27 model.safetensors
+
+========================================================================
+[Step 3/4] SEQUOIA Inference
+========================================================================
+
+[3.1] Running inference on test set...
+  Model: models/sequoia/brca-0
+  Features: data/processed/features
+  Output: results/sequoia/predictions_brca-0.csv
+
+Using device: cuda
+
+Loading gene list...
+   ✓ Loaded 20821 genes
+
+======================================================================
+Processing model: brca-0
+======================================================================
+
+[1/4] Loading SEQUOIA model...
+   Loading from local path: models/sequoia/brca-0
+Loading weights from local directory
+   ✓ Model loaded successfully
+
+[2/4] Running inference...
+   Processing 10 slides
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-5L-AAT1-01Z-00-DX1.F3449A5B-2AC4-4ED7-BF44-4C8946CDB47D/TCGA-5L-AAT1-01Z-00-DX1.F3449A5B-2AC4-4ED7-BF44-4C8946CDB47D.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533/TCGA-A2-A0YM-01Z-00-DX1.A48B4C96-2CC5-464C-98B7-F0F92AE56533.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-A7-A0CD-01Z-00-DX1.F045B9C8-049C-41BF-8432-EF89F236D34D/TCGA-A7-A0CD-01Z-00-DX1.F045B9C8-049C-41BF-8432-EF89F236D34D.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-A8-A09K-01Z-00-DX1.41B2DF5F-C0E1-43BB-BAA5-2946A9EC4650/TCGA-A8-A09K-01Z-00-DX1.41B2DF5F-C0E1-43BB-BAA5-2946A9EC4650.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-AC-A62V-01Z-00-DX1.2D8994FD-58B8-43C1-B99D-AA964E7DFD60/TCGA-AC-A62V-01Z-00-DX1.2D8994FD-58B8-43C1-B99D-AA964E7DFD60.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-AC-A8OP-01Z-00-DX1.A2AF501D-7DCD-4BE7-93A4-EBCAF0C0D54E/TCGA-AC-A8OP-01Z-00-DX1.A2AF501D-7DCD-4BE7-93A4-EBCAF0C0D54E.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-AQ-A0Y5-01Z-00-DX1.f68f5b49-30fa-4fb6-bec6-5da9f6809d02/TCGA-AQ-A0Y5-01Z-00-DX1.f68f5b49-30fa-4fb6-bec6-5da9f6809d02.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-AR-A24Q-01Z-00-DX1.69DC7E35-DC0D-4F20-88DA-04C25F28628C/TCGA-AR-A24Q-01Z-00-DX1.69DC7E35-DC0D-4F20-88DA-04C25F28628C.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-C8-A1HI-01Z-00-DX1.C6D0F8B8-55ED-477F-BAF7-AA05D0449CC8/TCGA-C8-A1HI-01Z-00-DX1.C6D0F8B8-55ED-477F-BAF7-AA05D0449CC8.h5
+   ⚠ Feature file not found: data/processed/features/BRCA/TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6/TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6.h5
+   ✓ Processed 0 slides successfully
+   ✗ No predictions generated for brca-0
+
+======================================================================
+✓ Inference Complete!
+======================================================================
+
+Results saved to: results/sequoia
+Processed 0 model(s)
+======================================================================
+
+
+✓ Inference complete!
+  Checkpoint saved: logs/.checkpoint_inference_done
+  Predictions saved: results/sequoia/predictions_brca-0.csv
+
+========================================================================
+[Step 4/4] Evaluation
+========================================================================
+
+[4.1] Evaluating predictions against ground truth...
+  Predictions: results/sequoia/predictions_brca-0.csv
+  Reference: data/metadata/tcga_reference.csv
+
+WARNING: results/sequoia/predictions_brca-0.csv not found, skipping
+
+✓ Evaluation complete!
+
+Results saved to:
+  - results/sequoia/predictions_brca-0_fixed.csv
+  - results/sequoia/predictions_brca-0_correlations.csv
+
+========================================================================
+Pipeline Complete!
+========================================================================
+
+Finished at: Sat Mar  7 02:03:04 PST 2026
+
+Output files:
+  Patches: data/processed/patches/
+  Features: data/processed/features/
+  Model: models/sequoia/brca-0
+  Predictions: results/sequoia/predictions_brca-0_fixed.csv
+  Correlations: results/sequoia/predictions_brca-0_correlations.csv
+
+To view results:
+  cat results/sequoia/predictions_brca-0_correlations.csv | head -20
+
+To clean checkpoints and rerun from scratch:
+  rm logs/.checkpoint_*
+
+========================================================================

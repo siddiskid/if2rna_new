@@ -1,0 +1,67 @@
+========================================================================
+SEQUOIA End-to-End Pipeline
+========================================================================
+Job ID: 8636166
+Node: se263
+Started at: Sat Mar 14 15:56:29 PDT 2026
+========================================================================
+Sat Mar 14 15:56:29 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-SXM2-32GB           On  |   00000000:18:00.0 Off |                    0 |
+| N/A   31C    P0             42W /  300W |       0MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+[Setup] Loading modules...
+[Setup] Activating virtual environment...
+Working directory: /scratch/st-singha53-1/schiluku/if2rna_new
+Python: /arc/project/st-singha53-1/if2rna/.venv/bin/python
+
+Configuration:
+  REF_FILE:     data/metadata/tcga_reference.csv
+  WSI_PATH:     data/hne_data/raw/images
+  FEAT_TYPE:    uni
+  MODEL_DIR:    models/sequoia/brca-0
+
+========================================================================
+[Step 0/7] Verifying inputs
+========================================================================
+  ✓ Reference CSV exists
+  ✓ Slides found: 10
+  ✓ Model found: models/sequoia/brca-0
+  ✓ Gene list found
+  ✓ SEQUOIA scripts found
+  ✓ All inputs verified
+
+========================================================================
+[Step 1/7] Fixing reference CSV
+========================================================================
+  SEQUOIA's patch_gen_hdf5.py adds .svs to wsi_file_name automatically.
+  If the CSV already has .svs, we get *.svs.svs and 0 matches.
+  Before: TCGA-5L-AAT1-01Z-00-DX1.F3449A5B-2AC4-4ED7-BF44-4C8946CDB47D
+  After:  TCGA-5L-AAT1-01Z-00-DX1.F3449A5B-2AC4-4ED7-BF44-4C8946CDB47D (already correct)
+  Rows: 10
+  ✓ Reference CSV ready
+
+========================================================================
+[Step 2/7] Cleaning old processed data
+========================================================================
+  ✓ Cleaned and recreated output directories
+
+========================================================================
+[Step 3/7] Patch extraction
+========================================================================

@@ -1,3 +1,4 @@
 data/
 .venv/
 models/
+results/if2rna_models/

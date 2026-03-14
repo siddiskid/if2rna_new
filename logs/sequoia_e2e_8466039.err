@@ -1,0 +1,11 @@
+usage: preprocess_slides.py [-h] --ref_file REF_FILE [--wsi_path WSI_PATH]
+                            [--output_dir OUTPUT_DIR]
+                            [--sequoia_dir SEQUOIA_DIR]
+                            [--steps {patch,patches,feature,features,kmeans,clustering} [{patch,patches,feature,features,kmeans,clustering} ...]]
+                            [--feat_type {resnet,uni}]
+                            [--uni_model_dir UNI_MODEL_DIR]
+                            [--patch_size PATCH_SIZE]
+                            [--max_patches_per_slide MAX_PATCHES_PER_SLIDE]
+                            [--max_patches_for_features MAX_PATCHES_FOR_FEATURES]
+                            [--n_clusters N_CLUSTERS] [--parallel]
+preprocess_slides.py: error: ambiguous option: --max_patches could match --max_patches_per_slide, --max_patches_for_features
