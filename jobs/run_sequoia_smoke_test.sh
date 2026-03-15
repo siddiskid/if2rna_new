@@ -36,27 +36,25 @@ echo "Started at: $(date)"
 echo "========================================================================"
 
 echo "[Setup] Activating environment"
-VENV_PATH="${VENV_PATH:-.venv/bin/activate}"
+PROJECT_DIR="/scratch/st-singha53-1/schiluku/if2rna_new"
+VENV_PATH="$PROJECT_DIR/.venv/bin/activate"
+
+cd "$PROJECT_DIR"
 source "$VENV_PATH"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_DIR="${PROJECT_DIR:-$DEFAULT_PROJECT_DIR}"
-cd "$PROJECT_DIR"
-
-# Configurable inputs
-REF_FILE="${REF_FILE:-data/metadata/tcga_reference.csv}"
-SMOKE_REF_FILE="${SMOKE_REF_FILE:-data/metadata/tcga_reference_smoke.csv}"
-GENE_LIST="${GENE_LIST:-sequoia-pub/examples/gene_list.csv}"
-WSI_PATH="${WSI_PATH:-data/raw/tcga_slides}"
-FEAT_TYPE="${FEAT_TYPE:-uni}"
-CANCER_TYPE="${CANCER_TYPE:-BRCA}"
-FOLD="${FOLD:-0}"
-SMOKE_SAMPLES="${SMOKE_SAMPLES:-10}"
-PATCH_SIZE="${PATCH_SIZE:-256}"
-MAX_PATCHES_PER_SLIDE="${MAX_PATCHES_PER_SLIDE:-200}"
-MAX_PATCHES_FOR_FEATURES="${MAX_PATCHES_FOR_FEATURES:-400}"
-N_CLUSTERS="${N_CLUSTERS:-100}"
+# Fixed config for Sockeye
+REF_FILE="data/metadata/tcga_reference.csv"
+SMOKE_REF_FILE="data/metadata/tcga_reference_smoke.csv"
+GENE_LIST="sequoia-pub/examples/gene_list.csv"
+WSI_PATH="data/hne_data/raw"
+FEAT_TYPE="uni"
+CANCER_TYPE="BRCA"
+FOLD=0
+SMOKE_SAMPLES=10
+PATCH_SIZE=256
+MAX_PATCHES_PER_SLIDE=200
+MAX_PATCHES_FOR_FEATURES=400
+N_CLUSTERS=100
 
 echo "Configuration:"
 echo "  Project dir: $PROJECT_DIR"
