@@ -46,7 +46,7 @@ source "$VENV_PATH"
 REF_FILE="data/metadata/tcga_reference.csv"
 SMOKE_REF_FILE="data/metadata/tcga_reference_smoke.csv"
 GENE_LIST="sequoia-pub/examples/gene_list.csv"
-WSI_PATH="data/hne_data/raw"
+WSI_PATH="data/hne_data/raw/images"
 FEAT_TYPE="uni"
 CANCER_TYPE="BRCA"
 FOLD=0
