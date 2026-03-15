@@ -106,6 +106,11 @@ echo ""
 
 CHECKPOINT_PREPROCESS="logs/.checkpoint_preprocess_done"
 
+# Prevent stale files from previous runs from being reused silently.
+rm -f "$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}.csv"
+rm -f "$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}_fixed.csv"
+rm -f "$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}_correlations.csv"
+
 if [ -f "$CHECKPOINT_PREPROCESS" ]; then
   echo "[Step 1] Preprocessing already complete (checkpoint found)"
 else
@@ -128,6 +133,66 @@ else
 
   touch "$CHECKPOINT_PREPROCESS"
   echo "✓ Preprocessing complete"
+fi
+
+# SEQUOIA inference expects "cluster_features". The upstream kmeans script is
+# often tied to resnet_features; for UNI runs we build cluster_features here.
+if [ "$FEAT_TYPE" = "uni" ]; then
+  echo ""
+  echo "========================================================================"
+  echo "[Step 1b/4] Ensuring cluster_features for UNI"
+  echo "========================================================================"
+
+  python - << 'PY_EOF'
+from pathlib import Path
+import h5py
+import numpy as np
+from sklearn.cluster import KMeans
+
+feature_root = Path("data/processed/features")
+created = 0
+checked = 0
+
+for h5_path in feature_root.rglob("*.h5"):
+    checked += 1
+    with h5py.File(h5_path, "r+") as f:
+        if "cluster_features" in f:
+            continue
+        if "uni_features" not in f:
+            continue
+
+        feats = f["uni_features"][:]
+        if feats.shape[0] == 0:
+            continue
+
+        n_clusters = min(100, feats.shape[0])
+        km = KMeans(n_clusters=n_clusters, random_state=99, n_init=10)
+        km.fit(feats)
+        f.create_dataset("cluster_features", data=km.cluster_centers_.astype(np.float32))
+        created += 1
+
+print(f"Checked feature files: {checked}")
+print(f"Created cluster_features: {created}")
+PY_EOF
+fi
+
+# Hard check: cluster_features must exist for inference.
+CLUSTER_COUNT=$(python - << 'PY_EOF'
+from pathlib import Path
+import h5py
+
+count = 0
+for h5_path in Path("data/processed/features").rglob("*.h5"):
+    with h5py.File(h5_path, "r") as f:
+        if "cluster_features" in f:
+            count += 1
+print(count)
+PY_EOF
+)
+
+if [ "$CLUSTER_COUNT" -eq 0 ]; then
+  echo "ERROR: No feature files with cluster_features found. Inference would be invalid."
+  exit 1
 fi
 
 ################################################################################
@@ -179,6 +244,24 @@ else
 
   touch "$CHECKPOINT_INFERENCE"
   echo "✓ Inference complete"
+fi
+
+# Hard check: predictions must exist and contain at least 1 row.
+if [ ! -f "$PREDICTIONS_FILE" ]; then
+  echo "ERROR: Inference did not create predictions file: $PREDICTIONS_FILE"
+  exit 1
+fi
+
+PRED_ROWS=$(python - << PY_EOF
+import pandas as pd
+df = pd.read_csv("$PREDICTIONS_FILE")
+print(len(df))
+PY_EOF
+)
+
+if [ "$PRED_ROWS" -eq 0 ]; then
+  echo "ERROR: Inference produced 0 prediction rows. Evaluation aborted."
+  exit 1
 fi
 
 ################################################################################
