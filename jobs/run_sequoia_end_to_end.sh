@@ -50,7 +50,7 @@ export PYTHONPATH="$PROJECT_DIR/sequoia-pub:${PYTHONPATH:-}"
 # Fixed config for Sockeye
 REF_FILE="data/metadata/tcga_reference.csv"
 GENE_LIST="sequoia-pub/examples/gene_list.csv"
-WSI_PATH="data/hne_data/raw"
+WSI_PATH="data/hne_data/raw/images"
 FEAT_TYPE="uni"
 CANCER_TYPE="BRCA"
 FOLD=0
@@ -105,11 +105,17 @@ echo ""
 ################################################################################
 
 CHECKPOINT_PREPROCESS="logs/.checkpoint_preprocess_done"
+CHECKPOINT_INFERENCE="logs/.checkpoint_inference_done"
 
 # Prevent stale files from previous runs from being reused silently.
 rm -f "$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}.csv"
 rm -f "$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}_fixed.csv"
 rm -f "$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}_correlations.csv"
+
+# If inference output is removed, force inference to rerun even if stale checkpoint exists.
+if [ -f "$CHECKPOINT_INFERENCE" ] && [ ! -f "$PREDICTIONS_FILE" ]; then
+  rm -f "$CHECKPOINT_INFERENCE"
+fi
 
 if [ -f "$CHECKPOINT_PREPROCESS" ]; then
   echo "[Step 1] Preprocessing already complete (checkpoint found)"
@@ -223,8 +229,6 @@ echo "✓ Model ready: $MODEL_DIR"
 ################################################################################
 # Step 3: Inference
 ################################################################################
-
-CHECKPOINT_INFERENCE="logs/.checkpoint_inference_done"
 
 if [ -f "$CHECKPOINT_INFERENCE" ]; then
   echo "[Step 3] Inference already complete (checkpoint found)"
