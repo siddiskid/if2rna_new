@@ -151,9 +151,23 @@ class SEQUOIAInference:
             return None
         
         try:
-            # Gene list from SEQUOIA is a CSV with just gene names
-            df = pd.read_csv(gene_list_path, header=None)
-            genes = df[0].tolist()
+            # Support both formats:
+            # 1) CSV with header column "gene"
+            # 2) Headerless single-column file
+            df = pd.read_csv(gene_list_path)
+            if "gene" in df.columns:
+                genes = df["gene"].dropna().astype(str).tolist()
+            elif len(df.columns) == 1:
+                genes = df.iloc[:, 0].dropna().astype(str).tolist()
+            else:
+                # Fall back to headerless parse if pandas inferred unexpected structure
+                df = pd.read_csv(gene_list_path, header=None)
+                genes = df.iloc[:, 0].dropna().astype(str).tolist()
+
+            # Defensive cleanup for accidental header row in headerless files
+            if genes and genes[0].strip().lower() in {"gene", "genes"}:
+                genes = genes[1:]
+
             print(f"   ✓ Loaded {len(genes)} genes")
             return genes
         except Exception as e:

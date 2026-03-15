@@ -16,7 +16,16 @@ def fix_and_evaluate_fold(predictions_file, gene_list_file, reference_file, outp
     
     print("Loading gene list...")
     gene_list = pd.read_csv(gene_list_file)
-    genes = gene_list['gene'].tolist()
+    if 'gene' in gene_list.columns:
+        genes = gene_list['gene'].dropna().astype(str).tolist()
+    elif len(gene_list.columns) == 1:
+        genes = gene_list.iloc[:, 0].dropna().astype(str).tolist()
+    else:
+        gene_list = pd.read_csv(gene_list_file, header=None)
+        genes = gene_list.iloc[:, 0].dropna().astype(str).tolist()
+
+    if genes and genes[0].strip().lower() in {'gene', 'genes'}:
+        genes = genes[1:]
     print(f"  {len(genes)} genes")
     
     print("Loading predictions...")

@@ -49,7 +49,7 @@ export PYTHONPATH="$PROJECT_DIR/sequoia-pub:${PYTHONPATH:-}"
 
 # Fixed config for Sockeye
 REF_FILE="data/metadata/tcga_reference.csv"
-GENE_LIST="sequoia-pub/examples/gene_list.csv"
+GENE_LIST="models/gene_list.csv"
 WSI_PATH="data/hne_data/raw/images"
 FEAT_TYPE="uni"
 CANCER_TYPE="BRCA"
