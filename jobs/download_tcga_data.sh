@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=st-singha53-1-gpu
+#SBATCH --account=st-singha53-1
 #SBATCH --job-name=tcga_download
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
