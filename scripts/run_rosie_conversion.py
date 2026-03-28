@@ -12,6 +12,16 @@ import sys
 from pathlib import Path
 
 
+def ensure_offline_rosie_eval(eval_py: Path) -> None:
+    """Patch legacy ROSIE evaluate.py to avoid internet weight downloads."""
+    text = eval_py.read_text(encoding="utf-8")
+    patched = text.replace("weights='IMAGENET1K_V1'", "weights=None")
+    patched = patched.replace('weights="IMAGENET1K_V1"', "weights=None")
+    if patched != text:
+        eval_py.write_text(patched, encoding="utf-8")
+        print(f"Patched offline model init in {eval_py}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run ROSIE conversion")
     parser.add_argument("--rosie_dir", default="models/rosie", help="Directory containing ROSIE code and weights")
@@ -27,6 +37,7 @@ def main() -> None:
     if not eval_py.exists():
         print(f"ERROR: evaluate.py not found at {eval_py}")
         sys.exit(1)
+    ensure_offline_rosie_eval(eval_py)
 
     model_path = (
         (repo_root / args.model_path).resolve()
