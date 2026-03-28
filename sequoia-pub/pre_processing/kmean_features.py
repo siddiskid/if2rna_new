@@ -67,7 +67,7 @@ if __name__ == '__main__':
         if args.gtex:
             project = args.gtex_tissue
         else:
-            project = df.iloc[0]['tcga_project']
+            project = row['tcga_project']
             WSI = WSI.replace('.svs', '')
 
         path = os.path.join(args.feature_path, project, WSI)
@@ -76,12 +76,18 @@ if __name__ == '__main__':
         except:
             print(f'Cannot open file {path}')
             continue
-        try:
-            features = f['resnet_features']
-        except:
-            print(f'No resnet features for {path}')
+
+        feature_key = None
+        if 'resnet_features' in f.keys():
+            feature_key = 'resnet_features'
+        elif 'uni_features' in f.keys():
+            feature_key = 'uni_features'
+        else:
+            print(f'No resnet_features/uni_features for {path}')
             f.close()
             continue
+
+        features = f[feature_key]
 
         if features.shape[0] < args.num_clusters:
             print(f'{WSI} less number of patches than clusters')

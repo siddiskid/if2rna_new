@@ -188,7 +188,7 @@ if [ "$FEAT_TYPE" = "uni" ] && [ "$SKIP_PREPROCESS" != "1" ]; then
   echo "[Step 1b/4] Ensuring cluster_features for UNI"
   echo "========================================================================"
 
-  python - << 'PY_EOF'
+  python - << PY_EOF
 from pathlib import Path
 import h5py
 import numpy as np
@@ -222,7 +222,7 @@ PY_EOF
 fi
 
 # Hard check: cluster_features must exist for inference.
-CLUSTER_COUNT=$(python - << 'PY_EOF'
+CLUSTER_COUNT=$(python - << PY_EOF
 from pathlib import Path
 import h5py
 
