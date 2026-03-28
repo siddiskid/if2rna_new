@@ -36,7 +36,7 @@ echo "========================================================================"
 nvidia-smi || true
 
 # Setup
-PROJECT_DIR="/scratch/st-singha53-1/schiluku/if2rna_new"
+PROJECT_DIR="${PROJECT_DIR:-/scratch/st-singha53-1/schiluku/if2rna_new}"
 VENV_PATH="$PROJECT_DIR/.venv/bin/activate"
 
 cd "$PROJECT_DIR"
@@ -47,16 +47,20 @@ module load openslide/3.4.1 || true
 
 export PYTHONPATH="$PROJECT_DIR/sequoia-pub:${PYTHONPATH:-}"
 
-# Fixed config for Sockeye
-REF_FILE="data/metadata/tcga_reference.csv"
-GENE_LIST="models/gene_list.csv"
-WSI_PATH="data/hne_data/raw/images"
-FEAT_TYPE="uni"
-CANCER_TYPE="BRCA"
-FOLD=0
-FEATURE_DIR="data/processed/features"
-OUTPUT_DIR="results/sequoia"
-MODEL_ROOT="models/sequoia"
+# Config (can be overridden via environment variables)
+REF_FILE="${REF_FILE:-data/metadata/tcga_reference.csv}"
+GENE_LIST="${GENE_LIST:-models/gene_list.csv}"
+WSI_PATH="${WSI_PATH:-data/hne_data/raw/images}"
+FEAT_TYPE="${FEAT_TYPE:-uni}"
+CANCER_TYPE="${CANCER_TYPE:-BRCA}"
+FOLD="${FOLD:-0}"
+FEATURE_DIR="${FEATURE_DIR:-data/processed/features}"
+OUTPUT_DIR="${OUTPUT_DIR:-results/sequoia}"
+MODEL_ROOT="${MODEL_ROOT:-models/sequoia}"
+STRICT_SAMPLE_MATCH="${STRICT_SAMPLE_MATCH:-1}"
+
+REF_TAG="$(basename "$REF_FILE")"
+REF_TAG="${REF_TAG%.*}"
 MODEL_DIR="$MODEL_ROOT/${CANCER_TYPE,,}-${FOLD}"
 PREDICTIONS_FILE="$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}.csv"
 
@@ -98,14 +102,25 @@ echo "  FOLD:         $FOLD"
 echo "  MODEL_DIR:    $MODEL_DIR"
 echo "  FEATURE_DIR:  $FEATURE_DIR"
 echo "  OUTPUT_DIR:   $OUTPUT_DIR"
+echo "  REF_TAG:      $REF_TAG"
+echo "  STRICT_MATCH: $STRICT_SAMPLE_MATCH"
+echo ""
+
+REF_ROWS=$(python - << PY_EOF
+import pandas as pd
+print(len(pd.read_csv("$REF_FILE")))
+PY_EOF
+)
+
+echo "Expected samples from reference: $REF_ROWS"
 echo ""
 
 ################################################################################
 # Step 1: Preprocessing
 ################################################################################
 
-CHECKPOINT_PREPROCESS="logs/.checkpoint_preprocess_done"
-CHECKPOINT_INFERENCE="logs/.checkpoint_inference_done"
+CHECKPOINT_PREPROCESS="logs/.checkpoint_preprocess_${REF_TAG}_${FEAT_TYPE}.done"
+CHECKPOINT_INFERENCE="logs/.checkpoint_inference_${CANCER_TYPE,,}-${FOLD}_${REF_TAG}.done"
 
 # Prevent stale files from previous runs from being reused silently.
 rm -f "$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}.csv"
@@ -265,6 +280,12 @@ PY_EOF
 
 if [ "$PRED_ROWS" -eq 0 ]; then
   echo "ERROR: Inference produced 0 prediction rows. Evaluation aborted."
+  exit 1
+fi
+
+if [ "$STRICT_SAMPLE_MATCH" = "1" ] && [ "$PRED_ROWS" -ne "$REF_ROWS" ]; then
+  echo "ERROR: Prediction row count ($PRED_ROWS) does not match reference rows ($REF_ROWS)."
+  echo "       Set STRICT_SAMPLE_MATCH=0 to allow partial outputs."
   exit 1
 fi
 
