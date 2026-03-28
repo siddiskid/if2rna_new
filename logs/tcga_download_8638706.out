@@ -1,0 +1,47 @@
+========================================================================
+TCGA Download Job
+========================================================================
+Job ID: 8638706
+Node: se051
+Started at: Sun Mar 15 15:18:55 PDT 2026
+========================================================================
+Working directory: /scratch/st-singha53-1/schiluku/if2rna_new
+Python: /arc/project/st-singha53-1/if2rna/.venv/bin/python
+
+Configuration:
+  CANCER_TYPES: BRCA
+  NUM_SAMPLES:  100
+  OUTPUT_DIR:   data/raw
+
+
+============================================================
+TCGA H&E + RNA Data Downloader
+============================================================
+Cancer types: BRCA
+Samples per type: 100
+Output directory: data/raw
+============================================================
+
+============================================================
+Downloading: TCGA-BRCA
+============================================================
+
+[1/4] Querying H&E slides for TCGA-BRCA...
+
+Error processing BRCA: HTTPSConnectionPool(host='api.gdc.cancer.gov', port=443): Max retries exceeded with url: /files?filters=%7B%22op%22%3A+%22and%22%2C+%22content%22%3A+%5B%7B%22op%22%3A+%22in%22%2C+%22content%22%3A+%7B%22field%22%3A+%22cases.project.project_id%22%2C+%22value%22%3A+%5B%22TCGA-BRCA%22%5D%7D%7D%2C+%7B%22op%22%3A+%22in%22%2C+%22content%22%3A+%7B%22field%22%3A+%22files.data_type%22%2C+%22value%22%3A+%5B%22Slide+Image%22%5D%7D%7D%2C+%7B%22op%22%3A+%22in%22%2C+%22content%22%3A+%7B%22field%22%3A+%22files.experimental_strategy%22%2C+%22value%22%3A+%5B%22Diagnostic+Slide%22%5D%7D%7D%2C+%7B%22op%22%3A+%22in%22%2C+%22content%22%3A+%7B%22field%22%3A+%22files.data_format%22%2C+%22value%22%3A+%5B%22SVS%22%5D%7D%7D%5D%7D&fields=file_id%2Cfile_name%2Cfile_size%2Ccases.submitter_id%2Ccases.samples.submitter_id%2Ccases.samples.sample_type&format=JSON&size=200 (Caused by NewConnectionError("HTTPSConnection(host='api.gdc.cancer.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+
+============================================================
+Download complete!
+Images: data/raw/images
+RNA data: data/raw/rna
+Metadata: data/metadata
+============================================================
+
+========================================================================
+Download complete
+========================================================================
+Slides:   data/raw/images
+RNA:      data/raw/rna
+Metadata: data/metadata
+Finished at: Sun Mar 15 15:18:58 PDT 2026
+========================================================================
