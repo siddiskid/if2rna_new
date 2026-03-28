@@ -65,8 +65,26 @@ def extract_patches(slide_path, mask_path, patch_size, patches_output_dir, slide
     path_hdf5 = os.path.join(patch_folder, f"{slide_id}.hdf5")
     hdf = h5py.File(path_hdf5, 'w')
 
-    slide = OpenSlide(slide_path)
-    mask, mask_level = get_mask(slide)
+    try:
+        slide = OpenSlide(slide_path)
+    except Exception as e:
+        hdf.close()
+        if os.path.exists(path_hdf5):
+            os.remove(path_hdf5)
+        print(f"error opening slide {slide_id}")
+        print(e)
+        return
+
+    try:
+        mask, mask_level = get_mask(slide)
+    except Exception as e:
+        hdf.close()
+        if os.path.exists(path_hdf5):
+            os.remove(path_hdf5)
+        print(f"error creating mask for slide {slide_id}")
+        print(e)
+        return
+
     mask = binary_dilation(mask, iterations=3)
     mask = binary_erosion(mask, iterations=3)
     np.save(os.path.join(patch_folder_mask, "mask.npy"), mask)

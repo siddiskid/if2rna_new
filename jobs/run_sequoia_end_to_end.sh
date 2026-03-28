@@ -88,18 +88,11 @@ if [ ! -f "$GENE_LIST" ]; then
   echo "ERROR: Gene list not found: $GENE_LIST"
   exit 1
 fi
-if [ ! -d "$OUTPUT_DIR" ]; then
-  echo "ERROR: Output directory not found: $OUTPUT_DIR"
-  exit 1
-fi
-if [ ! -d "$(dirname "$FEATURE_DIR")" ]; then
-  echo "ERROR: Parent of feature directory not found: $(dirname "$FEATURE_DIR")"
-  exit 1
-fi
-if [ ! -d "logs" ]; then
-  echo "ERROR: logs directory not found: logs"
-  exit 1
-fi
+
+# Ensure writable working directories exist.
+mkdir -p "$(dirname "$FEATURE_DIR")"
+mkdir -p "$OUTPUT_DIR"
+mkdir -p logs
 
 echo ""
 echo "Configuration:"
