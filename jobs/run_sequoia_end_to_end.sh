@@ -59,6 +59,8 @@ FEATURE_DIR="${FEATURE_DIR:-$PROCESSED_ROOT/features}"
 OUTPUT_DIR="${OUTPUT_DIR:-results/sequoia}"
 MODEL_ROOT="${MODEL_ROOT:-models/sequoia}"
 STRICT_SAMPLE_MATCH="${STRICT_SAMPLE_MATCH:-1}"
+SKIP_PREPROCESS="${SKIP_PREPROCESS:-0}"
+PREPROCESS_WAIT_MINUTES="${PREPROCESS_WAIT_MINUTES:-360}"
 
 REF_TAG="$(basename "$REF_FILE")"
 REF_TAG="${REF_TAG%.*}"
@@ -109,6 +111,7 @@ echo "  FEATURE_DIR:  $FEATURE_DIR"
 echo "  OUTPUT_DIR:   $OUTPUT_DIR"
 echo "  REF_TAG:      $REF_TAG"
 echo "  STRICT_MATCH: $STRICT_SAMPLE_MATCH"
+echo "  SKIP_PREPROC: $SKIP_PREPROCESS"
 echo ""
 
 REF_ROWS=$(python - << PY_EOF
@@ -137,7 +140,23 @@ if [ -f "$CHECKPOINT_INFERENCE" ] && [ ! -f "$PREDICTIONS_FILE" ]; then
   rm -f "$CHECKPOINT_INFERENCE"
 fi
 
-if [ -f "$CHECKPOINT_PREPROCESS" ]; then
+if [ "$SKIP_PREPROCESS" = "1" ]; then
+  echo "[Step 1] SKIP_PREPROCESS=1; waiting for preprocessing checkpoint"
+
+  for _ in $(seq 1 "$PREPROCESS_WAIT_MINUTES"); do
+    if [ -f "$CHECKPOINT_PREPROCESS" ]; then
+      break
+    fi
+    sleep 60
+  done
+
+  if [ -f "$CHECKPOINT_PREPROCESS" ]; then
+    echo "[Step 1] Preprocessing checkpoint found"
+  else
+    echo "WARNING: Preprocessing checkpoint not found after ${PREPROCESS_WAIT_MINUTES} minutes"
+    echo "         Continuing and validating feature availability below"
+  fi
+elif [ -f "$CHECKPOINT_PREPROCESS" ]; then
   echo "[Step 1] Preprocessing already complete (checkpoint found)"
 else
   echo "========================================================================"
@@ -163,7 +182,7 @@ fi
 
 # SEQUOIA inference expects "cluster_features". The upstream kmeans script is
 # often tied to resnet_features; for UNI runs we build cluster_features here.
-if [ "$FEAT_TYPE" = "uni" ]; then
+if [ "$FEAT_TYPE" = "uni" ] && [ "$SKIP_PREPROCESS" != "1" ]; then
   echo ""
   echo "========================================================================"
   echo "[Step 1b/4] Ensuring cluster_features for UNI"

@@ -28,6 +28,14 @@ export FEATURE_DIR="${FEATURE_DIR:-data/hne_data/processed/features}"
 export OUTPUT_DIR="${OUTPUT_DIR:-results/sequoia}"
 export MODEL_ROOT="${MODEL_ROOT:-models/sequoia}"
 export STRICT_SAMPLE_MATCH="${STRICT_SAMPLE_MATCH:-1}"
+export PREPROCESS_WAIT_MINUTES="${PREPROCESS_WAIT_MINUTES:-360}"
+
+# Avoid races: only one fold should preprocess shared H&E slides/features.
+if [ "${SLURM_ARRAY_TASK_ID}" = "0" ]; then
+	export SKIP_PREPROCESS=0
+else
+	export SKIP_PREPROCESS=1
+fi
 
 # Backward compatibility: remap legacy metadata path if it is injected via env.
 if [ "$REF_FILE" = "data/metadata/tcga_reference_brca_88.csv" ] && [ -f "data/hne_data/metadata/tcga_reference_brca_88.csv" ]; then
@@ -37,5 +45,6 @@ fi
 
 echo "Running fold $FOLD for $CANCER_TYPE"
 echo "Reference: $REF_FILE"
+echo "SKIP_PREPROCESS: $SKIP_PREPROCESS"
 
 bash jobs/run_sequoia_end_to_end.sh
