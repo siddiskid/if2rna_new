@@ -64,6 +64,16 @@ REF_TAG="${REF_TAG%.*}"
 MODEL_DIR="$MODEL_ROOT/${CANCER_TYPE,,}-${FOLD}"
 PREDICTIONS_FILE="$OUTPUT_DIR/predictions_${CANCER_TYPE,,}-${FOLD}.csv"
 
+# Backward compatibility: remap legacy metadata paths if present.
+if [ "$REF_FILE" = "data/metadata/tcga_reference.csv" ] && [ -f "data/hne_data/metadata/tcga_reference.csv" ]; then
+  echo "Remapping legacy REF_FILE to data/hne_data/metadata/tcga_reference.csv"
+  REF_FILE="data/hne_data/metadata/tcga_reference.csv"
+fi
+if [ "$REF_FILE" = "data/metadata/tcga_reference_brca_88.csv" ] && [ -f "data/hne_data/metadata/tcga_reference_brca_88.csv" ]; then
+  echo "Remapping legacy REF_FILE to data/hne_data/metadata/tcga_reference_brca_88.csv"
+  REF_FILE="data/hne_data/metadata/tcga_reference_brca_88.csv"
+fi
+
 # Required path checks
 if [ ! -f "$REF_FILE" ]; then
   echo "ERROR: Reference file not found: $REF_FILE"

@@ -28,6 +28,12 @@ export OUTPUT_DIR="${OUTPUT_DIR:-results/sequoia}"
 export MODEL_ROOT="${MODEL_ROOT:-models/sequoia}"
 export STRICT_SAMPLE_MATCH="${STRICT_SAMPLE_MATCH:-1}"
 
+# Backward compatibility: remap legacy metadata path if it is injected via env.
+if [ "$REF_FILE" = "data/metadata/tcga_reference_brca_88.csv" ] && [ -f "data/hne_data/metadata/tcga_reference_brca_88.csv" ]; then
+	echo "Remapping legacy REF_FILE to data/hne_data/metadata/tcga_reference_brca_88.csv"
+	export REF_FILE="data/hne_data/metadata/tcga_reference_brca_88.csv"
+fi
+
 echo "Running fold $FOLD for $CANCER_TYPE"
 echo "Reference: $REF_FILE"
 
