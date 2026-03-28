@@ -33,13 +33,27 @@ def fix_and_evaluate_fold(predictions_file, gene_list_file, reference_file, outp
     print(f"  Shape: {predictions.shape}")
     
     metadata_cols = ['wsi_file_name', 'patient_id', 'tcga_project']
-    pred_cols = [col for col in predictions.columns if col.startswith('pred_gene_')]
-    
+    pred_indexed_cols = [col for col in predictions.columns if col.startswith('pred_gene_')]
+    pred_named_cols = [
+        col for col in predictions.columns
+        if col.startswith('pred_') and not col.startswith('pred_gene_')
+    ]
+
     column_mapping = {}
-    for i, pred_col in enumerate(pred_cols):
-        if i < len(genes):
-            column_mapping[pred_col] = f"rna_{genes[i]}"
-    
+
+    # Format A: pred_gene_0, pred_gene_1, ...
+    if len(pred_indexed_cols) > 0:
+        for i, pred_col in enumerate(pred_indexed_cols):
+            if i < len(genes):
+                column_mapping[pred_col] = f"rna_{genes[i]}"
+    # Format B: pred_TP53, pred_ESR1, ...
+    elif len(pred_named_cols) > 0:
+        for pred_col in pred_named_cols:
+            gene_name = pred_col.replace('pred_', '', 1)
+            if gene_name.startswith('rna_'):
+                gene_name = gene_name.replace('rna_', '', 1)
+            column_mapping[pred_col] = f"rna_{gene_name}"
+
     print(f"Renaming {len(column_mapping)} columns...")
     predictions = predictions.rename(columns=column_mapping)
     
