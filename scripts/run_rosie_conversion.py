@@ -20,22 +20,30 @@ def main() -> None:
     parser.add_argument("--postprocess_image", default=None, help="Optional ROSIE postprocess flag value")
     args = parser.parse_args()
 
-    rosie_dir = Path(args.rosie_dir)
+    repo_root = Path(__file__).resolve().parent.parent
+    rosie_dir = (repo_root / args.rosie_dir).resolve() if not Path(args.rosie_dir).is_absolute() else Path(args.rosie_dir).resolve()
     eval_py = rosie_dir / "evaluate.py"
     if not eval_py.exists():
         print(f"ERROR: evaluate.py not found at {eval_py}")
         sys.exit(1)
 
-    model_path = Path(args.model_path) if args.model_path else (rosie_dir / "best_model_single.pth")
+    model_path = (
+        (repo_root / args.model_path).resolve()
+        if args.model_path and not Path(args.model_path).is_absolute()
+        else (Path(args.model_path).resolve() if args.model_path else (rosie_dir / "best_model_single.pth").resolve())
+    )
     if not model_path.exists():
         print(f"ERROR: model weights not found at {model_path}")
         sys.exit(1)
 
+    input_dir = (repo_root / args.input_dir).resolve() if not Path(args.input_dir).is_absolute() else Path(args.input_dir).resolve()
+    output_dir = (repo_root / args.output_dir).resolve() if not Path(args.output_dir).is_absolute() else Path(args.output_dir).resolve()
+
     cmd = [
         sys.executable,
-        str(eval_py),
-        "--input_dir", args.input_dir,
-        "--output_dir", args.output_dir,
+        "evaluate.py",
+        "--input_dir", str(input_dir),
+        "--output_dir", str(output_dir),
         "--model_path", str(model_path),
     ]
     if args.postprocess_image is not None:
