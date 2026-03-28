@@ -6,6 +6,7 @@ consistent within this repo.
 """
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -51,7 +52,14 @@ def main() -> None:
 
     print("Running:")
     print(" ".join(cmd))
-    subprocess.run(cmd, check=True, cwd=str(rosie_dir))
+    env = os.environ.copy()
+    cache_root = (repo_root / ".cache").resolve()
+    env.setdefault("MPLCONFIGDIR", str(cache_root / "matplotlib"))
+    env.setdefault("TORCH_HOME", str(cache_root / "torch"))
+    Path(env["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
+    Path(env["TORCH_HOME"]).mkdir(parents=True, exist_ok=True)
+
+    subprocess.run(cmd, check=True, cwd=str(rosie_dir), env=env)
 
 
 if __name__ == "__main__":

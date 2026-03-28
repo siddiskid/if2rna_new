@@ -16,6 +16,11 @@ PROJECT_DIR="${PROJECT_DIR:-/scratch/st-singha53-1/schiluku/if2rna_new}"
 cd "$PROJECT_DIR"
 source .venv/bin/activate
 
+# Avoid read-only $HOME cache/config paths on HPC compute nodes.
+export MPLCONFIGDIR="${MPLCONFIGDIR:-$PROJECT_DIR/.cache/matplotlib}"
+export TORCH_HOME="${TORCH_HOME:-$PROJECT_DIR/.cache/torch}"
+mkdir -p "$MPLCONFIGDIR" "$TORCH_HOME"
+
 # Inputs
 REF_FILE="${REF_FILE:-data/hne_data/metadata/tcga_reference_brca_88.csv}"
 WSI_DIR="${WSI_DIR:-data/hne_data/raw/images}"
