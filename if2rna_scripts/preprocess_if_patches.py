@@ -93,18 +93,25 @@ def process_sample(row, image_dir, output_dir, patch_size, max_patches, overlap)
     organ = row['organ_type']
     slide_name = row['slide_name']
     
-    # Find image path
-    organ_display = organ.replace('_', ' ')  # Lymph_Node -> Lymph Node
-    possible_paths = [
-        Path(image_dir) / organ / slide_name / f"{wsi_name}.png",
-        Path(image_dir) / organ_display / slide_name / f"{wsi_name}.png",
-    ]
-    
+    # Prefer explicit image_path if provided in the reference.
     image_path = None
-    for path in possible_paths:
-        if path.exists():
-            image_path = path
-            break
+    if 'image_path' in row and pd.notna(row['image_path']):
+        candidate = Path(str(row['image_path']))
+        if candidate.exists():
+            image_path = candidate
+
+    # Fallback to legacy image directory layout.
+    if image_path is None:
+        organ_display = organ.replace('_', ' ')  # Lymph_Node -> Lymph Node
+        possible_paths = [
+            Path(image_dir) / organ / slide_name / f"{wsi_name}.png",
+            Path(image_dir) / organ_display / slide_name / f"{wsi_name}.png",
+        ]
+
+        for path in possible_paths:
+            if path.exists():
+                image_path = path
+                break
     
     if image_path is None:
         return None, f"Image not found: {wsi_name}"
