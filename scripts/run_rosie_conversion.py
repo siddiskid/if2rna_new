@@ -13,10 +13,18 @@ from pathlib import Path
 
 
 def ensure_offline_rosie_eval(eval_py: Path) -> None:
-    """Patch legacy ROSIE evaluate.py to avoid internet weight downloads."""
+    """Patch legacy ROSIE evaluate.py for offline and PyTorch 2.6 compatibility."""
     text = eval_py.read_text(encoding="utf-8")
     patched = text.replace("weights='IMAGENET1K_V1'", "weights=None")
     patched = patched.replace('weights="IMAGENET1K_V1"', "weights=None")
+    patched = patched.replace(
+        "torch.load(args.model_path)['model_state_dict']",
+        "torch.load(args.model_path, map_location='cpu', weights_only=False)['model_state_dict']",
+    )
+    patched = patched.replace(
+        'torch.load(args.model_path)["model_state_dict"]',
+        "torch.load(args.model_path, map_location='cpu', weights_only=False)['model_state_dict']",
+    )
     if patched != text:
         eval_py.write_text(patched, encoding="utf-8")
         print(f"Patched offline model init in {eval_py}")
