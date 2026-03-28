@@ -19,7 +19,7 @@ cd "$PROJECT_DIR"
 # Defaults target your BRCA subset run; override as needed at submission time.
 export CANCER_TYPE="${CANCER_TYPE:-BRCA}"
 export FOLD="${SLURM_ARRAY_TASK_ID}"
-export REF_FILE="${REF_FILE:-data/metadata/tcga_reference_brca_88.csv}"
+export REF_FILE="${REF_FILE:-data/hne_data/metadata/tcga_reference_brca_88.csv}"
 export WSI_PATH="${WSI_PATH:-data/hne_data/raw/images}"
 export GENE_LIST="${GENE_LIST:-models/gene_list.csv}"
 export FEAT_TYPE="${FEAT_TYPE:-uni}"

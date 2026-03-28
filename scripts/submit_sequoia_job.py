@@ -85,9 +85,9 @@ mkdir -p logs data/processed/{{patches,features,masks}} models/sequoia results/s
 # Configuration
 export CANCER_TYPE="{cancer}"
 export FOLD={fold}
-export REF_FILE="data/metadata/tcga_reference.csv"
+export REF_FILE="data/hne_data/metadata/tcga_reference.csv"
 export GENE_LIST="sequoia-pub/examples/gene_list.csv"
-export WSI_PATH="data/raw/tcga_slides"
+export WSI_PATH="data/hne_data/raw/images"
 export FEAT_TYPE="uni"
 
 echo "Configuration:"

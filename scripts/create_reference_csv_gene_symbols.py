@@ -19,7 +19,7 @@ def create_reference_with_symbols():
     
     slides_dir = "data/hne_data/raw/images"
     rna_dir = "data/hne_data/raw/rna"
-    output_file = "data/metadata/tcga_reference.csv"
+    output_file = "data/hne_data/metadata/tcga_reference.csv"
     
     print("="*70)
     print("Creating Reference CSV with Gene Symbols")

@@ -43,8 +43,8 @@ cd "$PROJECT_DIR"
 source "$VENV_PATH"
 
 # Fixed config for Sockeye
-REF_FILE="data/metadata/tcga_reference.csv"
-SMOKE_REF_FILE="data/metadata/tcga_reference_smoke.csv"
+REF_FILE="data/hne_data/metadata/tcga_reference.csv"
+SMOKE_REF_FILE="data/hne_data/metadata/tcga_reference_smoke.csv"
 GENE_LIST="sequoia-pub/examples/gene_list.csv"
 WSI_PATH="data/hne_data/raw/images"
 FEAT_TYPE="uni"

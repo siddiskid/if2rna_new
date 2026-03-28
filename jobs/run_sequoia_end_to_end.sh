@@ -48,7 +48,7 @@ module load openslide/3.4.1 || true
 export PYTHONPATH="$PROJECT_DIR/sequoia-pub:${PYTHONPATH:-}"
 
 # Config (can be overridden via environment variables)
-REF_FILE="${REF_FILE:-data/metadata/tcga_reference.csv}"
+REF_FILE="${REF_FILE:-data/hne_data/metadata/tcga_reference.csv}"
 GENE_LIST="${GENE_LIST:-models/gene_list.csv}"
 WSI_PATH="${WSI_PATH:-data/hne_data/raw/images}"
 FEAT_TYPE="${FEAT_TYPE:-uni}"
