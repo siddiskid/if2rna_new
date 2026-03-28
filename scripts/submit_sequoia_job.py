@@ -80,7 +80,7 @@ nvidia-smi
 source .venv/bin/activate
 cd /scratch/st-singha53-1/schiluku/if2rna_new
 
-mkdir -p logs data/processed/{{patches,features,masks}} models/sequoia results/sequoia
+mkdir -p logs data/hne_data/processed/{{patches,features,masks}} models/sequoia results/sequoia
 
 # Configuration
 export CANCER_TYPE="{cancer}"
@@ -104,7 +104,7 @@ if [ ! -f "logs/.checkpoint_preprocess_${{CANCER_TYPE}}_done" ]; then
     python scripts/preprocess_slides.py \\
         --ref_file $REF_FILE \\
         --wsi_path $WSI_PATH \\
-        --output_dir data/processed \\
+        --output_dir data/hne_data/processed \
         --feat_type $FEAT_TYPE \\
         --steps all \\
         --max_patches 4000
@@ -135,7 +135,7 @@ if [ ! -f "logs/.checkpoint_inference_${{CANCER_TYPE}}_${{FOLD}}_done" ]; then
     python scripts/run_sequoia_inference.py \\
         --model_dir "models/sequoia/${{CANCER_TYPE,,}}-$FOLD" \\
         --ref_file $REF_FILE \\
-        --feature_dir data/processed/features \\
+        --feature_dir data/hne_data/processed/features \
         --gene_list $GENE_LIST \\
         --output_dir results/sequoia \\
         --feat_type $FEAT_TYPE \\

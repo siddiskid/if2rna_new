@@ -54,7 +54,8 @@ WSI_PATH="${WSI_PATH:-data/hne_data/raw/images}"
 FEAT_TYPE="${FEAT_TYPE:-uni}"
 CANCER_TYPE="${CANCER_TYPE:-BRCA}"
 FOLD="${FOLD:-0}"
-FEATURE_DIR="${FEATURE_DIR:-data/processed/features}"
+PROCESSED_ROOT="${PROCESSED_ROOT:-data/hne_data/processed}"
+FEATURE_DIR="${FEATURE_DIR:-$PROCESSED_ROOT/features}"
 OUTPUT_DIR="${OUTPUT_DIR:-results/sequoia}"
 MODEL_ROOT="${MODEL_ROOT:-models/sequoia}"
 STRICT_SAMPLE_MATCH="${STRICT_SAMPLE_MATCH:-1}"
@@ -110,6 +111,7 @@ echo "  FEAT_TYPE:    $FEAT_TYPE"
 echo "  CANCER_TYPE:  $CANCER_TYPE"
 echo "  FOLD:         $FOLD"
 echo "  MODEL_DIR:    $MODEL_DIR"
+echo "  PROCESSED:    $PROCESSED_ROOT"
 echo "  FEATURE_DIR:  $FEATURE_DIR"
 echo "  OUTPUT_DIR:   $OUTPUT_DIR"
 echo "  REF_TAG:      $REF_TAG"
@@ -154,7 +156,7 @@ else
   python scripts/preprocess_slides.py \
     --ref_file "$REF_FILE" \
     --wsi_path "$WSI_PATH" \
-    --output_dir data/processed \
+    --output_dir "$PROCESSED_ROOT" \
     --feat_type "$FEAT_TYPE" \
     --steps patch features kmeans \
     --patch_size 256 \
@@ -180,7 +182,7 @@ import h5py
 import numpy as np
 from sklearn.cluster import KMeans
 
-feature_root = Path("data/processed/features")
+feature_root = Path("$FEATURE_DIR")
 created = 0
 checked = 0
 
@@ -213,7 +215,7 @@ from pathlib import Path
 import h5py
 
 count = 0
-for h5_path in Path("data/processed/features").rglob("*.h5"):
+for h5_path in Path("$FEATURE_DIR").rglob("*.h5"):
     with h5py.File(h5_path, "r") as f:
         if "cluster_features" in f:
             count += 1

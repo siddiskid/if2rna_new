@@ -93,7 +93,7 @@ export HF_HUB_OFFLINE=1
 python scripts/preprocess_slides.py \
   --ref_file "$SMOKE_REF_FILE" \
   --wsi_path "$WSI_PATH" \
-  --output_dir data/processed \
+  --output_dir data/hne_data/processed \
   --feat_type "$FEAT_TYPE" \
   --steps patch features kmeans \
   --patch_size "$PATCH_SIZE" \
@@ -115,7 +115,7 @@ echo "[4/5] Running inference"
 python scripts/run_sequoia_inference.py \
   --model_dir "$MODEL_DIR" \
   --ref_file "$SMOKE_REF_FILE" \
-  --feature_dir data/processed/features \
+  --feature_dir data/hne_data/processed/features \
   --gene_list "$GENE_LIST" \
   --output_dir results/sequoia \
   --feat_type "$FEAT_TYPE"
