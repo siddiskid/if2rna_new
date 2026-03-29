@@ -33,11 +33,27 @@ from typing import Dict, List
 import pandas as pd
 
 
+def canonical_slide_key(name: str) -> str:
+    key = str(name)
+    lower = key.lower()
+
+    for suffix in (".svs", ".tiff", ".tif", ".png", ".jpg", ".jpeg"):
+        if lower.endswith(suffix):
+            key = key[: -len(suffix)]
+            lower = key.lower()
+            break
+
+    if lower.endswith("_rosie"):
+        key = key[:-6]
+
+    return key
+
+
 def build_image_index(image_dir: Path, extensions: List[str]) -> Dict[str, Path]:
     index: Dict[str, Path] = {}
     for ext in extensions:
         for p in image_dir.rglob(f"*{ext}"):
-            stem = p.stem
+            stem = canonical_slide_key(p.stem)
             # Keep the first match for determinism if duplicates exist.
             if stem not in index:
                 index[stem] = p
@@ -45,12 +61,7 @@ def build_image_index(image_dir: Path, extensions: List[str]) -> Dict[str, Path]
 
 
 def normalize_slide_name(name: str) -> str:
-    # Strip common WSI suffixes if present in metadata.
-    if name.endswith(".svs"):
-        return name[:-4]
-    if name.endswith(".tiff"):
-        return name[:-5]
-    return name
+    return canonical_slide_key(name)
 
 
 def main() -> None:
