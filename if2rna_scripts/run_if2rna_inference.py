@@ -7,6 +7,7 @@ using a trained IF2RNA checkpoint.
 """
 
 import argparse
+import pickle
 from pathlib import Path
 from typing import List, Optional, Tuple
 
@@ -21,6 +22,79 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'sequoia-pub'))
 sys.path.insert(0, str(ROOT / 'sequoia-pub' / 'src'))
 from src.tformer_lin import ViS  # type: ignore[import]
+
+
+def load_checkpoint_state_dict(checkpoint_path: Path, device: torch.device) -> dict:
+    try:
+        ckpt_obj = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    except TypeError:
+        ckpt_obj = torch.load(checkpoint_path, map_location=device)
+
+    if isinstance(ckpt_obj, dict) and "model_state_dict" in ckpt_obj:
+        state_dict = ckpt_obj["model_state_dict"]
+    else:
+        state_dict = ckpt_obj
+
+    if not isinstance(state_dict, dict):
+        raise RuntimeError(f"Unsupported checkpoint format: {checkpoint_path}")
+    return state_dict
+
+
+def checkpoint_num_outputs(state_dict: dict) -> Optional[int]:
+    for key, value in state_dict.items():
+        if key.endswith("linear_head.1.weight") and hasattr(value, "shape") and len(value.shape) == 2:
+            return int(value.shape[0])
+    return None
+
+
+def load_genes_from_results_pkl(results_pkl: Path) -> Optional[List[str]]:
+    if not results_pkl.exists():
+        return None
+    try:
+        with results_pkl.open("rb") as f:
+            obj = pickle.load(f)
+        genes = obj.get("genes") if isinstance(obj, dict) else None
+        if not isinstance(genes, list):
+            return None
+        normalized = [g if str(g).startswith("rna_") else f"rna_{g}" for g in genes]
+        return [str(g) for g in normalized]
+    except Exception:
+        return None
+
+
+def resolve_rna_columns(ref_df: pd.DataFrame, checkpoint_path: Path, ckpt_outputs: Optional[int], gene_list_pkl: Optional[str]) -> List[str]:
+    rna_cols = [c for c in ref_df.columns if c.startswith("rna_")]
+    if not rna_cols:
+        raise ValueError("reference_csv contains no rna_* columns")
+
+    if ckpt_outputs is None or len(rna_cols) == ckpt_outputs:
+        return rna_cols
+
+    candidate_pkls: List[Path] = []
+    if gene_list_pkl:
+        candidate_pkls.append(Path(gene_list_pkl))
+    candidate_pkls.append(checkpoint_path.parent / "test_results.pkl")
+
+    for pkl_path in candidate_pkls:
+        genes = load_genes_from_results_pkl(pkl_path)
+        if not genes:
+            continue
+        selected = [g for g in genes if g in ref_df.columns]
+        if ckpt_outputs is None or len(selected) == ckpt_outputs:
+            print(f"Using {len(selected)} RNA columns from gene list: {pkl_path}")
+            return selected
+
+    if len(rna_cols) >= ckpt_outputs:
+        print(
+            "WARNING: RNA columns do not match checkpoint outputs and no valid gene list was found. "
+            f"Using first {ckpt_outputs} rna_* columns from reference CSV."
+        )
+        return rna_cols[:ckpt_outputs]
+
+    raise RuntimeError(
+        f"Checkpoint outputs ({ckpt_outputs}) exceed available rna_* columns ({len(rna_cols)}). "
+        "Provide a matching reference CSV or --gene_list_pkl from the training run."
+    )
 
 
 def load_cluster_features(feature_h5: Path) -> Optional[np.ndarray]:
@@ -80,15 +154,19 @@ def main() -> None:
     parser.add_argument("--checkpoint", required=True, help="Path to trained IF2RNA checkpoint (.pt)")
     parser.add_argument("--output_predictions", required=True, help="Output predictions CSV")
     parser.add_argument("--output_correlations", required=False, help="Output per-gene correlations CSV")
+    parser.add_argument("--gene_list_pkl", required=False, default=None, help="Optional path to training test_results.pkl containing gene order")
     parser.add_argument("--depth", type=int, default=6, help="Transformer depth used during training")
     parser.add_argument("--num_heads", type=int, default=16, help="Transformer heads used during training")
     parser.add_argument("--device", default="cuda", help="cuda or cpu")
     args = parser.parse_args()
 
     ref_df = pd.read_csv(args.reference_csv)
-    rna_cols = [c for c in ref_df.columns if c.startswith("rna_")]
-    if not rna_cols:
-        raise ValueError("reference_csv contains no rna_* columns")
+
+    checkpoint_path = Path(args.checkpoint)
+    device = torch.device(args.device if torch.cuda.is_available() and args.device == "cuda" else "cpu")
+    state_dict = load_checkpoint_state_dict(checkpoint_path, device)
+    ckpt_outputs = checkpoint_num_outputs(state_dict)
+    rna_cols = resolve_rna_columns(ref_df, checkpoint_path, ckpt_outputs, args.gene_list_pkl)
 
     first_feature = None
     for _, row in ref_df.iterrows():
@@ -101,7 +179,6 @@ def main() -> None:
     if first_feature is None:
         raise RuntimeError("No cluster_features found in feature_dir for any sample")
 
-    device = torch.device(args.device if torch.cuda.is_available() and args.device == "cuda" else "cpu")
     model = ViS(
         num_outputs=len(rna_cols),
         input_dim=first_feature.shape[1],
@@ -112,7 +189,7 @@ def main() -> None:
         dimensions_s=64,
         device=device,
     )
-    model.load_state_dict(torch.load(args.checkpoint, map_location=device))
+    model.load_state_dict(state_dict)
     model.to(device)
     model.eval()
 
