@@ -41,7 +41,7 @@ IF_FEATURE_DIR="${IF_FEATURE_DIR:-data/rosie_if/features}"
 RESNET_DIR="${RESNET_DIR:-models/resnet50}"
 
 # IF2RNA inference assets
-IF2RNA_CKPT="${IF2RNA_CKPT:-results/if2rna_models/baseline_resnet_log/model_best4.pt}"
+IF2RNA_CKPT="${IF2RNA_CKPT:-results/if2rna_models/baseline_resnet_log/model_best_4.pt}"
 PRED_OUT="${PRED_OUT:-results/rosie_if2rna/predictions_rosie_brca_88_fold4.csv}"
 CORR_OUT="${CORR_OUT:-results/rosie_if2rna/correlations_rosie_brca_88_fold4.csv}"
 
