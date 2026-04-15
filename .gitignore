@@ -2,3 +2,21 @@ data/
 .venv/
 models/
 results/if2rna_models/
+
+# Runtime artifacts and HPC telemetry
+logs/
+*.out
+*.err
+dcgm-gpu-stats-*.out
+slurm-*.out
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Generated results and packaging outputs
+results/
+
+# Local notebooks/checkpoints
+.ipynb_checkpoints/
+.checkpoint*

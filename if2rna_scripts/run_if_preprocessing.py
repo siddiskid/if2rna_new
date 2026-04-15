@@ -76,6 +76,8 @@ def main():
                        help='Max patches per image')
     parser.add_argument('--num_clusters', type=int, default=100,
                        help='Number of K-means clusters')
+    parser.add_argument('--no_duplicate_patches', action='store_true',
+                       help='Do not duplicate patches when fewer than max_patches are available')
     
     # Pipeline control
     parser.add_argument('--steps', nargs='+',
@@ -123,6 +125,9 @@ def main():
             '--max_patches', str(args.max_patches),
             '--seed', str(args.seed)
         ]
+
+        if args.no_duplicate_patches:
+            cmd.append('--no_duplicate_patches')
         
         if args.start is not None:
             cmd.extend(['--start', str(args.start)])

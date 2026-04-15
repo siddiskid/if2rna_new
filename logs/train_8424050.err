@@ -1,349 +1,0 @@
-/scratch/st-singha53-1/schiluku/if2rna_new/if2rna_scripts/train_if2rna.py:197: DtypeWarning: Columns (4) have mixed types. Specify dtype option on import or set low_memory=False.
-  df = pd.read_csv(args.ref_file)
-  0%|          | 0/200 [00:00<?, ?it/s]  0%|          | 1/200 [01:02<3:26:17, 62.20s/it]  1%|          | 2/200 [01:58<3:13:03, 58.50s/it]  2%|▏         | 3/200 [02:53<3:07:57, 57.25s/it]  2%|▏         | 4/200 [03:49<3:04:58, 56.62s/it]  2%|▎         | 5/200 [04:45<3:03:02, 56.32s/it]  3%|▎         | 6/200 [05:40<3:01:17, 56.07s/it]  4%|▎         | 7/200 [06:35<2:58:46, 55.58s/it]  4%|▍         | 8/200 [07:30<2:57:07, 55.35s/it]  4%|▍         | 9/200 [08:25<2:55:42, 55.20s/it]  5%|▌         | 10/200 [09:20<2:54:48, 55.20s/it]  6%|▌         | 11/200 [10:15<2:53:31, 55.08s/it]  6%|▌         | 12/200 [11:10<2:52:23, 55.02s/it]  6%|▋         | 13/200 [12:04<2:51:13, 54.94s/it]  7%|▋         | 14/200 [12:59<2:50:06, 54.87s/it]  8%|▊         | 15/200 [13:54<2:49:10, 54.87s/it]  8%|▊         | 16/200 [14:49<2:48:06, 54.82s/it]  8%|▊         | 17/200 [15:43<2:47:14, 54.84s/it]  9%|▉         | 18/200 [16:38<2:46:16, 54.82s/it] 10%|▉         | 19/200 [17:33<2:45:05, 54.72s/it] 10%|█         | 20/200 [18:28<2:44:25, 54.81s/it] 10%|█         | 21/200 [19:22<2:43:23, 54.77s/it] 11%|█         | 22/200 [20:17<2:42:11, 54.67s/it] 12%|█▏        | 23/200 [21:12<2:41:25, 54.72s/it] 12%|█▏        | 24/200 [22:06<2:40:32, 54.73s/it] 12%|█▎        | 25/200 [23:01<2:39:16, 54.61s/it] 12%|█▎        | 25/200 [23:55<2:47:29, 57.43s/it]
-  0%|          | 0/12 [00:00<?, ?it/s]  8%|▊         | 1/12 [00:03<00:38,  3.52s/it] 25%|██▌       | 3/12 [00:03<00:08,  1.03it/s] 42%|████▏     | 5/12 [00:07<00:09,  1.42s/it] 58%|█████▊    | 7/12 [00:07<00:04,  1.19it/s] 75%|███████▌  | 9/12 [00:10<00:03,  1.10s/it] 92%|█████████▏| 11/12 [00:10<00:00,  1.37it/s]100%|██████████| 12/12 [00:10<00:00,  1.12it/s]
-  0%|          | 0/12 [00:00<?, ?it/s]  8%|▊         | 1/12 [00:00<00:06,  1.78it/s] 25%|██▌       | 3/12 [00:00<00:01,  5.06it/s] 42%|████▏     | 5/12 [00:00<00:01,  6.73it/s] 58%|█████▊    | 7/12 [00:01<00:00,  9.06it/s] 75%|███████▌  | 9/12 [00:01<00:00,  8.94it/s] 92%|█████████▏| 11/12 [00:01<00:00, 10.80it/s]100%|██████████| 12/12 [00:01<00:00,  8.15it/s]
-  0%|          | 0/200 [00:00<?, ?it/s]  0%|          | 1/200 [00:50<2:49:05, 50.98s/it]  1%|          | 2/200 [01:42<2:48:35, 51.09s/it]  2%|▏         | 3/200 [02:32<2:47:15, 50.94s/it]  2%|▏         | 4/200 [03:23<2:46:23, 50.94s/it]  2%|▎         | 5/200 [04:14<2:45:22, 50.88s/it]  3%|▎         | 6/200 [05:05<2:44:40, 50.93s/it]  4%|▎         | 7/200 [05:56<2:43:53, 50.95s/it]  4%|▍         | 8/200 [06:47<2:43:14, 51.01s/it]  4%|▍         | 9/200 [07:38<2:41:44, 50.81s/it]  5%|▌         | 10/200 [08:28<2:40:51, 50.80s/it]  6%|▌         | 11/200 [09:20<2:41:08, 51.16s/it]  6%|▌         | 12/200 [10:12<2:40:38, 51.27s/it]  6%|▋         | 13/200 [11:03<2:39:54, 51.31s/it]  7%|▋         | 14/200 [11:54<2:38:21, 51.08s/it]  8%|▊         | 15/200 [12:44<2:36:41, 50.82s/it]  8%|▊         | 16/200 [13:35<2:36:12, 50.94s/it]  8%|▊         | 17/200 [14:26<2:34:46, 50.74s/it]  9%|▉         | 18/200 [15:17<2:34:08, 50.82s/it] 10%|▉         | 19/200 [16:07<2:32:48, 50.66s/it] 10%|█         | 20/200 [16:57<2:31:31, 50.51s/it] 10%|█         | 21/200 [17:47<2:30:26, 50.43s/it] 11%|█         | 22/200 [18:38<2:29:29, 50.39s/it] 12%|█▏        | 23/200 [19:28<2:28:36, 50.37s/it] 12%|█▏        | 24/200 [20:19<2:27:59, 50.45s/it] 12%|█▎        | 25/200 [21:09<2:27:00, 50.40s/it] 13%|█▎        | 26/200 [22:00<2:26:26, 50.50s/it] 14%|█▎        | 27/200 [22:50<2:25:22, 50.42s/it] 14%|█▍        | 28/200 [23:40<2:24:28, 50.40s/it] 14%|█▍        | 29/200 [24:30<2:23:35, 50.38s/it] 15%|█▌        | 30/200 [25:21<2:22:45, 50.38s/it] 16%|█▌        | 31/200 [26:11<2:21:36, 50.27s/it] 16%|█▌        | 32/200 [27:01<2:20:40, 50.24s/it] 16%|█▋        | 33/200 [27:51<2:19:42, 50.20s/it] 17%|█▋        | 34/200 [28:41<2:18:43, 50.14s/it] 18%|█▊        | 35/200 [29:32<2:18:06, 50.22s/it] 18%|█▊        | 36/200 [30:21<2:17:00, 50.13s/it] 18%|█▊        | 37/200 [31:11<2:15:59, 50.06s/it] 19%|█▉        | 38/200 [32:01<2:15:12, 50.08s/it] 20%|█▉        | 39/200 [32:52<2:14:27, 50.11s/it] 20%|██        | 40/200 [33:42<2:14:03, 50.27s/it] 20%|██        | 41/200 [34:33<2:13:23, 50.34s/it] 21%|██        | 42/200 [35:23<2:12:37, 50.36s/it] 22%|██▏       | 43/200 [36:15<2:12:41, 50.71s/it] 22%|██▏       | 44/200 [37:05<2:11:36, 50.62s/it] 22%|██▎       | 45/200 [37:56<2:10:34, 50.54s/it] 22%|██▎       | 45/200 [38:46<2:13:34, 51.71s/it]
-  0%|          | 0/16 [00:00<?, ?it/s]  6%|▋         | 1/16 [00:01<00:28,  1.88s/it] 19%|█▉        | 3/16 [00:02<00:06,  1.88it/s] 31%|███▏      | 5/16 [00:03<00:05,  1.89it/s] 38%|███▊      | 6/16 [00:03<00:04,  2.02it/s] 50%|█████     | 8/16 [00:03<00:02,  3.26it/s] 56%|█████▋    | 9/16 [00:04<00:02,  2.40it/s] 62%|██████▎   | 10/16 [00:04<00:02,  2.77it/s] 75%|███████▌  | 12/16 [00:04<00:00,  4.26it/s] 81%|████████▏ | 13/16 [00:05<00:01,  2.66it/s] 88%|████████▊ | 14/16 [00:05<00:00,  2.83it/s]100%|██████████| 16/16 [00:06<00:00,  3.73it/s]100%|██████████| 16/16 [00:06<00:00,  2.60it/s]
-  0%|          | 0/16 [00:00<?, ?it/s]  6%|▋         | 1/16 [00:00<00:09,  1.66it/s] 19%|█▉        | 3/16 [00:00<00:02,  4.97it/s] 31%|███▏      | 5/16 [00:00<00:01,  6.88it/s] 44%|████▍     | 7/16 [00:01<00:00,  9.10it/s] 56%|█████▋    | 9/16 [00:01<00:00,  8.95it/s] 69%|██████▉   | 11/16 [00:01<00:00, 10.61it/s] 81%|████████▏ | 13/16 [00:01<00:00,  9.83it/s] 94%|█████████▍| 15/16 [00:01<00:00, 11.32it/s]100%|██████████| 16/16 [00:01<00:00,  8.70it/s]
-  0%|          | 0/200 [00:00<?, ?it/s]  0%|          | 1/200 [00:58<3:14:37, 58.68s/it]  1%|          | 2/200 [01:53<3:06:28, 56.51s/it]  2%|▏         | 3/200 [02:50<3:06:44, 56.88s/it]  2%|▏         | 4/200 [03:46<3:04:05, 56.35s/it]  2%|▎         | 5/200 [04:41<3:01:28, 55.84s/it]  3%|▎         | 6/200 [05:35<2:58:52, 55.32s/it]  4%|▎         | 7/200 [06:30<2:56:58, 55.02s/it]  4%|▍         | 8/200 [07:24<2:55:08, 54.73s/it]  4%|▍         | 9/200 [08:18<2:53:49, 54.60s/it]  5%|▌         | 10/200 [09:13<2:53:36, 54.82s/it]  6%|▌         | 11/200 [10:07<2:51:53, 54.57s/it]  6%|▌         | 12/200 [11:02<2:50:46, 54.50s/it]  6%|▋         | 13/200 [11:56<2:49:39, 54.44s/it]  7%|▋         | 14/200 [12:51<2:48:50, 54.46s/it]  8%|▊         | 15/200 [13:45<2:48:11, 54.55s/it]  8%|▊         | 16/200 [14:41<2:48:06, 54.82s/it]  8%|▊         | 17/200 [15:35<2:46:56, 54.73s/it]  9%|▉         | 18/200 [16:29<2:45:05, 54.42s/it] 10%|▉         | 19/200 [17:23<2:43:43, 54.27s/it] 10%|█         | 20/200 [18:17<2:42:30, 54.17s/it] 10%|█         | 21/200 [19:11<2:41:18, 54.07s/it] 11%|█         | 22/200 [20:05<2:40:29, 54.10s/it] 12%|█▏        | 23/200 [20:59<2:39:27, 54.05s/it] 12%|█▏        | 24/200 [21:53<2:38:42, 54.10s/it] 12%|█▎        | 25/200 [22:47<2:37:59, 54.17s/it] 13%|█▎        | 26/200 [23:43<2:38:07, 54.53s/it] 14%|█▎        | 27/200 [24:36<2:36:23, 54.24s/it] 14%|█▍        | 28/200 [25:30<2:34:57, 54.06s/it] 14%|█▍        | 29/200 [26:24<2:33:50, 53.98s/it] 15%|█▌        | 30/200 [27:18<2:32:57, 53.99s/it] 16%|█▌        | 31/200 [28:12<2:32:10, 54.03s/it] 16%|█▌        | 32/200 [29:06<2:31:23, 54.07s/it] 16%|█▋        | 33/200 [30:00<2:30:30, 54.08s/it] 17%|█▋        | 34/200 [30:54<2:29:35, 54.07s/it] 18%|█▊        | 35/200 [31:49<2:29:18, 54.29s/it] 18%|█▊        | 36/200 [32:43<2:28:19, 54.27s/it] 18%|█▊        | 37/200 [33:37<2:27:05, 54.14s/it] 19%|█▉        | 38/200 [34:31<2:26:06, 54.11s/it] 20%|█▉        | 39/200 [35:25<2:24:44, 53.94s/it] 20%|██        | 40/200 [36:19<2:23:59, 54.00s/it] 20%|██        | 41/200 [37:13<2:22:59, 53.96s/it] 21%|██        | 42/200 [38:07<2:22:06, 53.97s/it] 22%|██▏       | 43/200 [39:01<2:21:13, 53.97s/it] 22%|██▏       | 44/200 [39:55<2:20:23, 54.00s/it] 22%|██▎       | 45/200 [40:49<2:19:34, 54.03s/it] 23%|██▎       | 46/200 [41:43<2:18:45, 54.06s/it] 24%|██▎       | 47/200 [42:37<2:18:13, 54.21s/it] 24%|██▍       | 48/200 [43:32<2:17:28, 54.27s/it] 24%|██▍       | 49/200 [44:26<2:16:18, 54.16s/it] 25%|██▌       | 50/200 [45:20<2:15:21, 54.14s/it] 26%|██▌       | 51/200 [46:14<2:14:20, 54.10s/it] 26%|██▌       | 52/200 [47:08<2:13:29, 54.12s/it] 26%|██▋       | 53/200 [48:02<2:12:39, 54.14s/it] 27%|██▋       | 54/200 [48:56<2:11:38, 54.10s/it] 27%|██▋       | 54/200 [49:50<2:14:45, 55.38s/it]
-  0%|          | 0/12 [00:00<?, ?it/s]  8%|▊         | 1/12 [00:01<00:14,  1.32s/it] 17%|█▋        | 2/12 [00:01<00:08,  1.21it/s] 33%|███▎      | 4/12 [00:02<00:03,  2.38it/s] 42%|████▏     | 5/12 [00:02<00:02,  2.38it/s] 50%|█████     | 6/12 [00:03<00:02,  2.28it/s] 67%|██████▋   | 8/12 [00:03<00:01,  3.83it/s] 75%|███████▌  | 9/12 [00:04<00:01,  2.13it/s] 83%|████████▎ | 10/12 [00:04<00:00,  2.42it/s]100%|██████████| 12/12 [00:04<00:00,  3.85it/s]100%|██████████| 12/12 [00:04<00:00,  2.56it/s]
-  0%|          | 0/12 [00:00<?, ?it/s]  8%|▊         | 1/12 [00:00<00:06,  1.71it/s] 25%|██▌       | 3/12 [00:00<00:01,  5.08it/s] 42%|████▏     | 5/12 [00:00<00:01,  6.33it/s] 58%|█████▊    | 7/12 [00:01<00:00,  8.57it/s] 75%|███████▌  | 9/12 [00:01<00:00,  8.40it/s] 92%|█████████▏| 11/12 [00:01<00:00, 10.26it/s]100%|██████████| 12/12 [00:01<00:00,  7.87it/s]
-  0%|          | 0/200 [00:00<?, ?it/s]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  0%|          | 1/200 [00:53<2:57:44, 53.59s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  1%|          | 2/200 [01:47<2:57:17, 53.73s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  2%|▏         | 3/200 [02:40<2:55:27, 53.44s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  2%|▏         | 4/200 [03:33<2:54:04, 53.29s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  2%|▎         | 5/200 [04:26<2:52:51, 53.19s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  3%|▎         | 6/200 [05:19<2:51:25, 53.02s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  4%|▎         | 7/200 [06:12<2:50:42, 53.07s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  4%|▍         | 8/200 [07:06<2:50:23, 53.25s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  4%|▍         | 9/200 [07:58<2:49:11, 53.15s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  5%|▌         | 10/200 [08:51<2:48:03, 53.07s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  6%|▌         | 11/200 [09:44<2:46:56, 53.00s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  6%|▌         | 12/200 [10:37<2:46:09, 53.03s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  6%|▋         | 13/200 [11:30<2:45:21, 53.06s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  7%|▋         | 14/200 [12:23<2:44:24, 53.03s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  8%|▊         | 15/200 [13:16<2:43:20, 52.97s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  8%|▊         | 16/200 [14:09<2:42:31, 53.00s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  8%|▊         | 17/200 [15:02<2:41:39, 53.00s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  9%|▉         | 18/200 [15:55<2:40:53, 53.04s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 10%|▉         | 19/200 [16:48<2:39:54, 53.01s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 10%|█         | 20/200 [17:42<2:39:15, 53.09s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 10%|█         | 21/200 [18:35<2:38:15, 53.05s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 10%|█         | 21/200 [19:28<2:45:57, 55.63s/it]
-  0%|          | 0/13 [00:00<?, ?it/s]  8%|▊         | 1/13 [00:03<00:39,  3.26s/it] 23%|██▎       | 3/13 [00:03<00:08,  1.12it/s] 38%|███▊      | 5/13 [00:06<00:09,  1.14s/it] 54%|█████▍    | 7/13 [00:06<00:04,  1.41it/s] 69%|██████▉   | 9/13 [00:08<00:03,  1.08it/s] 85%|████████▍ | 11/13 [00:09<00:01,  1.48it/s]100%|██████████| 13/13 [00:10<00:00,  1.54it/s]100%|██████████| 13/13 [00:10<00:00,  1.23it/s]
-  0%|          | 0/13 [00:00<?, ?it/s]  8%|▊         | 1/13 [00:00<00:07,  1.66it/s] 23%|██▎       | 3/13 [00:00<00:02,  4.89it/s] 38%|███▊      | 5/13 [00:00<00:01,  6.67it/s] 54%|█████▍    | 7/13 [00:01<00:00,  8.86it/s] 69%|██████▉   | 9/13 [00:01<00:00,  8.12it/s] 85%|████████▍ | 11/13 [00:01<00:00,  9.47it/s]100%|██████████| 13/13 [00:01<00:00, 11.12it/s]100%|██████████| 13/13 [00:01<00:00,  7.88it/s]
-  0%|          | 0/200 [00:00<?, ?it/s]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  0%|          | 1/200 [00:58<3:12:40, 58.09s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  1%|          | 2/200 [01:56<3:11:46, 58.11s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  2%|▏         | 3/200 [02:54<3:10:48, 58.12s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  2%|▏         | 4/200 [03:52<3:09:33, 58.03s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  2%|▎         | 5/200 [04:50<3:09:15, 58.23s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  3%|▎         | 6/200 [05:48<3:07:26, 57.97s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  4%|▎         | 7/200 [06:46<3:06:21, 57.93s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  4%|▍         | 8/200 [07:44<3:05:31, 57.98s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  4%|▍         | 9/200 [08:41<3:04:02, 57.81s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  5%|▌         | 10/200 [09:38<3:02:22, 57.59s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  6%|▌         | 11/200 [10:36<3:01:09, 57.51s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  6%|▌         | 12/200 [11:33<3:00:19, 57.55s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  6%|▋         | 13/200 [12:30<2:58:46, 57.36s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  7%|▋         | 14/200 [13:29<2:58:49, 57.68s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  8%|▊         | 15/200 [14:26<2:57:25, 57.54s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  8%|▊         | 16/200 [15:23<2:56:23, 57.52s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  8%|▊         | 17/200 [16:21<2:55:27, 57.53s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-  9%|▉         | 18/200 [17:19<2:54:52, 57.65s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 10%|▉         | 19/200 [18:16<2:53:39, 57.56s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 10%|█         | 20/200 [19:14<2:52:40, 57.56s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 10%|█         | 21/200 [20:11<2:51:21, 57.44s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 11%|█         | 22/200 [21:08<2:50:30, 57.47s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 12%|█▏        | 23/200 [22:06<2:49:26, 57.44s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 12%|█▏        | 24/200 [23:04<2:49:17, 57.71s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 12%|█▎        | 25/200 [24:02<2:48:11, 57.66s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 13%|█▎        | 26/200 [24:59<2:47:15, 57.67s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 14%|█▎        | 27/200 [25:58<2:46:59, 57.92s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 14%|█▍        | 28/200 [26:56<2:45:54, 57.87s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 14%|█▍        | 29/200 [27:53<2:44:37, 57.77s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 15%|█▌        | 30/200 [28:50<2:43:14, 57.61s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 16%|█▌        | 31/200 [29:48<2:42:21, 57.64s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 16%|█▌        | 32/200 [30:45<2:41:04, 57.53s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 16%|█▋        | 33/200 [31:43<2:40:17, 57.59s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 17%|█▋        | 34/200 [32:40<2:39:03, 57.49s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 18%|█▊        | 35/200 [33:38<2:38:08, 57.51s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 18%|█▊        | 36/200 [34:36<2:37:21, 57.57s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 18%|█▊        | 37/200 [35:33<2:36:18, 57.54s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 19%|█▉        | 38/200 [36:31<2:35:18, 57.52s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 20%|█▉        | 39/200 [37:28<2:34:14, 57.48s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 20%|██        | 40/200 [38:25<2:33:12, 57.46s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 20%|██        | 41/200 [39:24<2:33:16, 57.84s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 21%|██        | 42/200 [40:21<2:31:54, 57.69s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 22%|██▏       | 43/200 [41:19<2:30:47, 57.63s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 22%|██▏       | 44/200 [42:16<2:29:39, 57.56s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 22%|██▎       | 45/200 [43:14<2:28:27, 57.47s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 23%|██▎       | 46/200 [44:11<2:27:28, 57.46s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 24%|██▎       | 47/200 [45:08<2:26:23, 57.41s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 24%|██▍       | 48/200 [46:06<2:25:26, 57.41s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 24%|██▍       | 49/200 [47:03<2:24:34, 57.45s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 25%|██▌       | 50/200 [48:01<2:23:31, 57.41s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 26%|██▌       | 51/200 [48:58<2:22:38, 57.44s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 26%|██▌       | 52/200 [49:56<2:21:44, 57.46s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 26%|██▋       | 53/200 [50:53<2:20:28, 57.33s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 27%|██▋       | 54/200 [51:50<2:19:21, 57.27s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 28%|██▊       | 55/200 [52:47<2:18:23, 57.27s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 28%|██▊       | 56/200 [53:44<2:17:25, 57.26s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 28%|██▊       | 57/200 [54:41<2:16:24, 57.24s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 29%|██▉       | 58/200 [55:39<2:15:29, 57.25s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 30%|██▉       | 59/200 [56:36<2:14:29, 57.23s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 30%|███       | 60/200 [57:33<2:13:38, 57.28s/it]/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/fromnumeric.py:3596: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-/arc/project/st-singha53-1/if2rna/.venv/lib64/python3.9/site-packages/numpy/_core/_methods.py:138: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
- 30%|███       | 60/200 [58:31<2:16:33, 58.52s/it]
-  0%|          | 0/9 [00:00<?, ?it/s] 11%|█         | 1/9 [00:02<00:23,  2.89s/it] 22%|██▏       | 2/9 [00:03<00:11,  1.67s/it] 44%|████▍     | 4/9 [00:03<00:03,  1.51it/s] 56%|█████▌    | 5/9 [00:05<00:03,  1.01it/s] 67%|██████▋   | 6/9 [00:06<00:02,  1.08it/s] 78%|███████▊  | 7/9 [00:06<00:01,  1.33it/s]100%|██████████| 9/9 [00:06<00:00,  2.34it/s]100%|██████████| 9/9 [00:06<00:00,  1.31it/s]
-  0%|          | 0/9 [00:00<?, ?it/s] 11%|█         | 1/9 [00:00<00:04,  1.64it/s] 33%|███▎      | 3/9 [00:00<00:01,  4.92it/s] 56%|█████▌    | 5/9 [00:00<00:00,  6.60it/s] 78%|███████▊  | 7/9 [00:01<00:00,  8.91it/s]100%|██████████| 9/9 [00:01<00:00, 10.96it/s]100%|██████████| 9/9 [00:01<00:00,  7.40it/s]

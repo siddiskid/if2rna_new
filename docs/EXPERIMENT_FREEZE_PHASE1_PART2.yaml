@@ -1,0 +1,59 @@
+phase: "Phase 1 Part 2"
+status: "locked"
+created_at: "2026-04-04"
+owner: "Siddarth Chilukuri"
+
+primary_dataset:
+  reference_csv: "data/hne_data_archive_20260403_153424/metadata/if_reference.csv"
+  training_reference_csv: "data/hne_data_archive_20260403_153424/metadata/if_reference_phase1_train_ready.csv"
+  samples: 942
+  training_samples_ready: 941
+  patients: 17
+  organs:
+    Liver: 379
+    Kidney: 203
+    Lymph_Node: 187
+    Colon: 173
+  gene_columns_prefix: "rna_"
+  gene_columns_count: 15830
+
+split_protocol:
+  method: "patient-level 5-fold CV"
+  implementation: "if2rna_scripts/train_if2rna.py::patient_kfold"
+  random_seed: 42
+  validation: "validation subset split from train patients per fold"
+
+primary_model_track:
+  model_type: "vis"
+  feature_dir: "data/if_features"
+  feature_key: "cluster_features"
+  train_script: "if2rna_scripts/train_if2rna.py"
+  inference_script: "if2rna_scripts/run_if2rna_inference.py"
+  evaluation_script: "if2rna_scripts/evaluate_if2rna.py"
+
+phase2_baseline_plan:
+  baseline_a:
+    name: "vit"
+    train_script: "if2rna_scripts/train_if2rna.py"
+    model_type: "vit"
+    status: "ready-now"
+  baseline_b:
+    name: "he2rna-style pooling"
+    status: "not-directly-compatible"
+    blocker: "sequoia-pub data loader expects tcga_project path layout"
+  baseline_c:
+    name: "handcrafted + elastic net"
+    status: "missing-implementation"
+
+frozen_metrics:
+  - "mean_gene_pearson_r"
+  - "median_gene_pearson_r"
+  - "mae"
+  - "rmse"
+  - "gene_count_above_threshold"
+
+exclusions:
+  - "KIRC 20-sample reference CSVs are auxiliary and not part of the primary benchmark"
+
+change_control:
+  rule: "Any config change must be logged as separate experiment track"

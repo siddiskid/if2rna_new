@@ -1,8 +1,0 @@
-{
-  "model": "brca-0",
-  "n_slides": 10,
-  "n_genes": 20820,
-  "mean_correlation": -0.05594145814796204,
-  "median_correlation": -0.06744882123227505,
-  "mean_rmse": 50.226011625869845
-}

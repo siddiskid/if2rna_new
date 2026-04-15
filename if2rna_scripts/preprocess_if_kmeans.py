@@ -32,31 +32,39 @@ def cluster_features(feature_h5_path, wsi_name, feat_type, num_clusters=100, see
     
     Returns:
         cluster_features: (num_clusters x feature_dim) array of cluster centroids
+        n_used: number of distinct clusters actually used before padding
     """
     try:
         with h5py.File(feature_h5_path, 'r') as f:
             if f'{feat_type}_features' not in f.keys():
-                return None, f"Features not found: {feat_type}_features"
+                return None, None, f"Features not found: {feat_type}_features"
             
             features = f[f'{feat_type}_features'][:]
+
+        if features.shape[0] == 0:
+            return None, None, f"No features available: {wsi_name}"
+
+        # Handle frequent duplicate-feature cases (common in ROSIE conversions)
+        # by adapting n_clusters to distinct vectors and then padding back.
+        distinct_count = np.unique(features, axis=0).shape[0]
+        n_used = max(1, min(num_clusters, distinct_count))
         
-        # Check if we have enough patches
-        if features.shape[0] < num_clusters:
-            # If fewer patches than clusters, pad with duplicates
-            num_repeats = int(np.ceil(num_clusters / features.shape[0]))
-            features = np.tile(features, (num_repeats, 1))[:num_clusters]
-        
-        # Run K-means
-        kmeans = KMeans(n_clusters=num_clusters, random_state=seed, n_init=10)
-        kmeans.fit(features)
-        
-        # Get cluster centers (mean features for each cluster)
-        cluster_centers = kmeans.cluster_centers_
-        
-        return cluster_centers, None
+        if n_used == 1:
+            cluster_centers = features.mean(axis=0, keepdims=True)
+        else:
+            kmeans = KMeans(n_clusters=n_used, random_state=seed, n_init=10)
+            kmeans.fit(features)
+            cluster_centers = kmeans.cluster_centers_
+
+        # Keep model input shape fixed by padding centers if needed.
+        if cluster_centers.shape[0] < num_clusters:
+            repeats = int(np.ceil(num_clusters / cluster_centers.shape[0]))
+            cluster_centers = np.tile(cluster_centers, (repeats, 1))[:num_clusters]
+
+        return cluster_centers, n_used, None
         
     except Exception as e:
-        return None, f"Error clustering {wsi_name}: {e}"
+        return None, None, f"Error clustering {wsi_name}: {e}"
 
 
 def process_sample(row, feature_dir, feat_type, num_clusters, seed):
@@ -81,7 +89,7 @@ def process_sample(row, feature_dir, feat_type, num_clusters, seed):
         pass
     
     # Cluster features
-    cluster_centers, error = cluster_features(
+    cluster_centers, n_used, error = cluster_features(
         feature_h5_path, wsi_name, feat_type, num_clusters, seed
     )
     
@@ -94,8 +102,10 @@ def process_sample(row, feature_dir, feat_type, num_clusters, seed):
             if 'cluster_features' in f.keys():
                 del f['cluster_features']
             f.create_dataset('cluster_features', data=cluster_centers, compression='gzip')
+            f.attrs['cluster_count_requested'] = int(num_clusters)
+            f.attrs['cluster_count_used'] = int(n_used)
         
-        return wsi_name, num_clusters
+        return wsi_name, int(n_used)
         
     except Exception as e:
         return None, f"Error saving clusters for {wsi_name}: {e}"

@@ -1,0 +1,8 @@
+metric,value
+reference_csv,data/hne_data_archive_20260403_153424/metadata/if_reference.csv
+n_samples,942
+n_patients,17
+n_organs,4
+n_genes_rna_prefix,15830
+split_protocol,patient-level 5-fold CV
+random_seed,42

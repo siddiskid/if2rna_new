@@ -22,8 +22,14 @@ from PIL import Image
 import cv2
 
 
-def extract_patches_from_image(image_path, patch_size=256, max_patches=100, overlap=0, 
-                               background_threshold=0.95):
+def extract_patches_from_image(
+    image_path,
+    patch_size=256,
+    max_patches=100,
+    overlap=0,
+    background_threshold=0.95,
+    duplicate_if_needed=True,
+):
     """
     Extract patches from a single IF ROI image
     
@@ -73,8 +79,9 @@ def extract_patches_from_image(image_path, patch_size=256, max_patches=100, over
             indices = np.random.choice(len(patches), max_patches, replace=False)
             patches = [patches[i] for i in sorted(indices)]
         
-        # If we have too few patches, duplicate randomly
-        if len(patches) < max_patches and len(patches) > 0:
+        # Optionally duplicate patches to fixed count. For ROSIE conversions,
+        # this should usually be disabled to avoid creating many repeated tokens.
+        if duplicate_if_needed and len(patches) < max_patches and len(patches) > 0:
             while len(patches) < max_patches:
                 patches.append(patches[np.random.randint(len(patches))])
         
@@ -85,7 +92,7 @@ def extract_patches_from_image(image_path, patch_size=256, max_patches=100, over
         return []
 
 
-def process_sample(row, image_dir, output_dir, patch_size, max_patches, overlap):
+def process_sample(row, image_dir, output_dir, patch_size, max_patches, overlap, duplicate_if_needed):
     """
     Process a single sample from reference CSV
     """
@@ -130,7 +137,8 @@ def process_sample(row, image_dir, output_dir, patch_size, max_patches, overlap)
         image_path, 
         patch_size=patch_size, 
         max_patches=max_patches,
-        overlap=overlap
+        overlap=overlap,
+        duplicate_if_needed=duplicate_if_needed,
     )
     
     if len(patches) == 0:
@@ -172,6 +180,8 @@ def main():
                        help='End index for parallelization')
     parser.add_argument('--seed', type=int, default=42,
                        help='Random seed')
+    parser.add_argument('--no_duplicate_patches', action='store_true',
+                       help='Do not duplicate patches when fewer than --max_patches are found')
     
     args = parser.parse_args()
     
@@ -207,7 +217,8 @@ def main():
     for idx, row in tqdm(df.iterrows(), total=len(df), desc="Processing"):
         result, message = process_sample(
             row, args.image_dir, args.output_dir, 
-            args.patch_size, args.max_patches, args.overlap
+            args.patch_size, args.max_patches, args.overlap,
+            duplicate_if_needed=not args.no_duplicate_patches,
         )
         
         if result is None:

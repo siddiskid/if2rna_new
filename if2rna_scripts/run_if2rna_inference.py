@@ -62,13 +62,18 @@ def load_genes_from_results_pkl(results_pkl: Path) -> Optional[List[str]]:
         return None
 
 
-def resolve_rna_columns(ref_df: pd.DataFrame, checkpoint_path: Path, ckpt_outputs: Optional[int], gene_list_pkl: Optional[str]) -> List[str]:
+def resolve_rna_columns(
+    ref_df: pd.DataFrame,
+    checkpoint_path: Path,
+    ckpt_outputs: Optional[int],
+    gene_list_pkl: Optional[str],
+) -> Tuple[List[str], Optional[List[int]]]:
     rna_cols = [c for c in ref_df.columns if c.startswith("rna_")]
     if not rna_cols:
         raise ValueError("reference_csv contains no rna_* columns")
 
     if ckpt_outputs is None or len(rna_cols) == ckpt_outputs:
-        return rna_cols
+        return rna_cols, None
 
     candidate_pkls: List[Path] = []
     if gene_list_pkl:
@@ -79,17 +84,34 @@ def resolve_rna_columns(ref_df: pd.DataFrame, checkpoint_path: Path, ckpt_output
         genes = load_genes_from_results_pkl(pkl_path)
         if not genes:
             continue
-        selected = [g for g in genes if g in ref_df.columns]
+        selected = []
+        selected_indices = []
+        ref_cols = set(ref_df.columns)
+        for idx, gene_name in enumerate(genes):
+            if gene_name in ref_cols:
+                selected.append(gene_name)
+                selected_indices.append(idx)
+
         if ckpt_outputs is None or len(selected) == ckpt_outputs:
             print(f"Using {len(selected)} RNA columns from gene list: {pkl_path}")
-            return selected
+            return selected, selected_indices
+
+        # Partial overlap is still valid as long as we preserve checkpoint order
+        # and index into matching output positions.
+        if len(selected) > 0:
+            print(
+                "WARNING: Gene list and reference only partially overlap. "
+                f"Using {len(selected)} overlapping genes out of {ckpt_outputs} checkpoint outputs "
+                f"from {pkl_path}."
+            )
+            return selected, selected_indices
 
     if len(rna_cols) >= ckpt_outputs:
         print(
             "WARNING: RNA columns do not match checkpoint outputs and no valid gene list was found. "
             f"Using first {ckpt_outputs} rna_* columns from reference CSV."
         )
-        return rna_cols[:ckpt_outputs]
+        return rna_cols[:ckpt_outputs], None
 
     raise RuntimeError(
         f"Checkpoint outputs ({ckpt_outputs}) exceed available rna_* columns ({len(rna_cols)}). "
@@ -166,7 +188,12 @@ def main() -> None:
     device = torch.device(args.device if torch.cuda.is_available() and args.device == "cuda" else "cpu")
     state_dict = load_checkpoint_state_dict(checkpoint_path, device)
     ckpt_outputs = checkpoint_num_outputs(state_dict)
-    rna_cols = resolve_rna_columns(ref_df, checkpoint_path, ckpt_outputs, args.gene_list_pkl)
+    rna_cols, output_indices = resolve_rna_columns(
+        ref_df,
+        checkpoint_path,
+        ckpt_outputs,
+        args.gene_list_pkl,
+    )
 
     first_feature = None
     for _, row in ref_df.iterrows():
@@ -179,8 +206,10 @@ def main() -> None:
     if first_feature is None:
         raise RuntimeError("No cluster_features found in feature_dir for any sample")
 
+    model_num_outputs = ckpt_outputs if ckpt_outputs is not None else len(rna_cols)
+
     model = ViS(
-        num_outputs=len(rna_cols),
+        num_outputs=model_num_outputs,
         input_dim=first_feature.shape[1],
         depth=args.depth,
         nheads=args.num_heads,
@@ -205,6 +234,8 @@ def main() -> None:
         x = torch.from_numpy(feats).float().unsqueeze(0).to(device)
         with torch.no_grad():
             y = model(x).cpu().numpy().squeeze()
+        if output_indices is not None:
+            y = y[output_indices]
 
         out_row = {
             "wsi_file_name": wsi,

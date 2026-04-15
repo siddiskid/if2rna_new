@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Create ROSIE-compatible PNG inputs from WSI slides.
 
-Reads slide names from reference CSV and exports one low-resolution RGB PNG per slide
-(from the lowest-resolution pyramid level) to keep memory manageable.
+Reads slide names from a reference CSV and exports one RGB PNG per slide using
+an intermediate WSI pyramid level (instead of the lowest thumbnail level) to
+preserve more morphology for downstream conversion.
 """
 
 import argparse
@@ -21,12 +22,48 @@ def normalize_name(name: str) -> str:
     return name
 
 
+def select_level(slide_obj: OpenSlide, requested_level: int, target_downsample: float) -> int:
+    """Pick a pyramid level for preview export.
+
+    Priority:
+    1) Explicit level if provided and valid
+    2) Level with downsample closest to target_downsample
+    """
+    max_level = len(slide_obj.level_dimensions) - 1
+
+    if requested_level >= 0:
+        if requested_level > max_level:
+            raise ValueError(f"Requested level {requested_level} exceeds max level {max_level}")
+        return requested_level
+
+    downsamples = list(slide_obj.level_downsamples)
+    best_idx = min(range(len(downsamples)), key=lambda i: abs(float(downsamples[i]) - target_downsample))
+    return int(best_idx)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Prepare ROSIE PNG inputs from WSI")
     parser.add_argument("--reference_csv", required=True)
     parser.add_argument("--wsi_dir", required=True)
     parser.add_argument("--output_dir", required=True)
-    parser.add_argument("--max_side", type=int, default=2048, help="Resize longest side to this value (0 disables resize)")
+    parser.add_argument(
+        "--max_side",
+        type=int,
+        default=4096,
+        help="Resize longest side to this value (0 disables resize)",
+    )
+    parser.add_argument(
+        "--wsi_level",
+        type=int,
+        default=-1,
+        help="Explicit OpenSlide pyramid level to read (default: auto by --target_downsample)",
+    )
+    parser.add_argument(
+        "--target_downsample",
+        type=float,
+        default=16.0,
+        help="Auto-select level whose OpenSlide downsample is closest to this value",
+    )
     args = parser.parse_args()
 
     df = pd.read_csv(args.reference_csv)
@@ -58,7 +95,7 @@ def main() -> None:
 
         try:
             slide_obj = OpenSlide(str(wsi_path))
-            level = len(slide_obj.level_dimensions) - 1
+            level = select_level(slide_obj, args.wsi_level, args.target_downsample)
             dims = slide_obj.level_dimensions[level]
             img = slide_obj.read_region((0, 0), level, dims).convert("RGB")
 

@@ -34,12 +34,50 @@ from src.vit import train, evaluate
 from src.tformer_lin import ViS
 
 
+class AttentionMIL(nn.Module):
+    """Attention-based MIL with gated attention pooling over patch embeddings."""
+
+    def __init__(self, num_outputs, input_dim, hidden_dim=512, attn_dim=256, dropout=0.1, device='cuda'):
+        super().__init__()
+        self.device = device
+
+        self.encoder = nn.Sequential(
+            nn.LayerNorm(input_dim),
+            nn.Linear(input_dim, hidden_dim),
+            nn.GELU(),
+            nn.Dropout(dropout),
+        )
+
+        # Gated attention (Ilse et al. style): a_i ∝ softmax(w^T[tanh(Vh_i) ⊙ sigmoid(Uh_i)])
+        self.attn_v = nn.Linear(hidden_dim, attn_dim)
+        self.attn_u = nn.Linear(hidden_dim, attn_dim)
+        self.attn_w = nn.Linear(attn_dim, 1)
+
+        self.decoder = nn.Sequential(
+            nn.LayerNorm(hidden_dim),
+            nn.Linear(hidden_dim, num_outputs),
+        )
+
+    def forward(self, x):
+        # x: [B, N, D] where N is the number of patches per ROI
+        h = self.encoder(x)
+        a_v = torch.tanh(self.attn_v(h))
+        a_u = torch.sigmoid(self.attn_u(h))
+        a = self.attn_w(a_v * a_u).squeeze(-1)
+        a = torch.softmax(a, dim=1)
+
+        z = torch.sum(h * a.unsqueeze(-1), dim=1)
+        return self.decoder(z)
+
+
 class IFRNADataset(Dataset):
     """Dataset for IF images and RNA expression"""
     
-    def __init__(self, df, feature_dir):
+    def __init__(self, df, feature_dir, feature_key='cluster_features', bag_cap=None):
         self.df = df.reset_index(drop=True)
         self.feature_dir = feature_dir
+        self.feature_key = feature_key
+        self.bag_cap = bag_cap
         
         # Get number of genes from first sample
         row = self.df.iloc[0]
@@ -51,7 +89,9 @@ class IFRNADataset(Dataset):
         organ = row['organ_type']
         h5_path = os.path.join(self.feature_dir, organ, sample_id, f"{sample_id}.h5")
         with h5py.File(h5_path, 'r') as f:
-            features = f['cluster_features'][:]
+            if self.feature_key not in f:
+                raise KeyError(f"Missing feature key '{self.feature_key}' in {h5_path}")
+            features = f[self.feature_key][:]
             self.feature_dim = features.shape[1]
     
     def __len__(self):
@@ -66,7 +106,13 @@ class IFRNADataset(Dataset):
         h5_path = os.path.join(self.feature_dir, organ, sample_id, f"{sample_id}.h5")
         try:
             with h5py.File(h5_path, 'r') as f:
-                features = torch.tensor(f['cluster_features'][:], dtype=torch.float32)
+                if self.feature_key not in f:
+                    raise KeyError(f"Missing feature key '{self.feature_key}'")
+                features_np = f[self.feature_key][:]
+                if self.bag_cap is not None and self.bag_cap > 0 and features_np.shape[0] > self.bag_cap:
+                    sel = np.random.choice(features_np.shape[0], size=self.bag_cap, replace=False)
+                    features_np = features_np[sel]
+                features = torch.tensor(features_np, dtype=torch.float32)
         except Exception as e:
             print(f"Error loading {h5_path}: {e}")
             features = None
@@ -131,12 +177,23 @@ def main():
     
     # Model parameters
     parser.add_argument('--model_type', type=str, default='vis',
-                       choices=['vis', 'vit'],
-                       help='Model architecture (vis=linearized transformer)')
+                       choices=['vis', 'vit', 'attention_mil'],
+                       help='Model architecture (vis, vit, attention_mil)')
     parser.add_argument('--depth', type=int, default=6,
                        help='Transformer depth')
     parser.add_argument('--num_heads', type=int, default=16,
                        help='Number of attention heads')
+    parser.add_argument('--mil_hidden_dim', type=int, default=512,
+                       help='Hidden dimension for attention MIL encoder')
+    parser.add_argument('--mil_attn_dim', type=int, default=256,
+                       help='Attention projection dimension for attention MIL')
+    parser.add_argument('--mil_dropout', type=float, default=0.1,
+                       help='Dropout for attention MIL encoder')
+    parser.add_argument('--feature_key', type=str, default='cluster_features',
+                       choices=['cluster_features', 'resnet_features'],
+                       help='Feature key inside H5 files')
+    parser.add_argument('--bag_cap', type=int, default=None,
+                       help='Optional max number of patches per bag (random subsample if exceeded)')
     
     # Training parameters
     parser.add_argument('--train', action='store_true',
@@ -295,9 +352,9 @@ def main():
         np.save(os.path.join(save_dir, f'test_{fold}.npy'), test_df['patient_id'].unique())
         
         # Create datasets
-        train_dataset = IFRNADataset(train_df, args.feature_dir)
-        val_dataset = IFRNADataset(val_df, args.feature_dir)
-        test_dataset = IFRNADataset(test_df, args.feature_dir)
+        train_dataset = IFRNADataset(train_df, args.feature_dir, feature_key=args.feature_key, bag_cap=args.bag_cap)
+        val_dataset = IFRNADataset(val_df, args.feature_dir, feature_key=args.feature_key, bag_cap=args.bag_cap)
+        test_dataset = IFRNADataset(test_df, args.feature_dir, feature_key=args.feature_key, bag_cap=args.bag_cap)
         
         feature_dim = train_dataset.feature_dim
         print(f"Feature dimension: {feature_dim}")
@@ -345,7 +402,7 @@ def main():
                 dimensions_s=64,
                 device=device
             )
-        else:  # vit
+        elif args.model_type == 'vit':
             from src.vit import ViT
             model = ViT(
                 num_outputs=num_genes,
@@ -354,6 +411,15 @@ def main():
                 heads=args.num_heads,
                 mlp_dim=2048,
                 dim_head=64,
+                device=device
+            )
+        else:  # attention_mil
+            model = AttentionMIL(
+                num_outputs=num_genes,
+                input_dim=feature_dim,
+                hidden_dim=args.mil_hidden_dim,
+                attn_dim=args.mil_attn_dim,
+                dropout=args.mil_dropout,
                 device=device
             )
         
@@ -415,7 +481,7 @@ def main():
                 dimensions_s=64,
                 device=device
             )
-        else:
+        elif args.model_type == 'vit':
             from src.vit import ViT
             random_model = ViT(
                 num_outputs=num_genes,
@@ -424,6 +490,15 @@ def main():
                 heads=args.num_heads,
                 mlp_dim=2048,
                 dim_head=64,
+                device=device
+            )
+        else:
+            random_model = AttentionMIL(
+                num_outputs=num_genes,
+                input_dim=feature_dim,
+                hidden_dim=args.mil_hidden_dim,
+                attn_dim=args.mil_attn_dim,
+                dropout=args.mil_dropout,
                 device=device
             )
         random_model.to(device)
