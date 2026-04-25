@@ -10,6 +10,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 
+# Compatibility shim for unpickling numpy arrays saved under a different numpy module path.
+# Some pickles reference `numpy._core.numeric` (NumPy 2.x), while other envs expose it as
+# `numpy.core.numeric` (NumPy 1.x). This alias lets `pickle.load` resolve the module.
+import sys
+
+try:
+    import numpy.core.numeric as _np_core_numeric
+
+    sys.modules.setdefault("numpy._core.numeric", _np_core_numeric)
+except Exception:
+    pass
+
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "results" / "presentation_assets" / "2026-04-06"
@@ -27,20 +39,33 @@ MODEL_COLORS = {
 
 
 def set_style():
+    # Paper-ready defaults: white background, modest font sizes, and widely-available sans-serif fallbacks.
     plt.rcParams.update({
-        "figure.facecolor": "#F8F7F4",
+        "figure.facecolor": "#FFFFFF",
         "axes.facecolor": "#FFFFFF",
-        "axes.edgecolor": "#D8D6D0",
+        "axes.edgecolor": "#444444",
+        "axes.linewidth": 0.8,
         "axes.grid": False,
-        "grid.color": "#E7E5DF",
+        "grid.color": "#E5E5E5",
         "grid.alpha": 1.0,
         "grid.linestyle": "-",
-        "font.size": 12,
-        "axes.titlesize": 16,
-        "axes.labelsize": 12,
-        "legend.fontsize": 10,
+        "font.family": "sans-serif",
+        "font.sans-serif": ["Helvetica", "Arial", "Liberation Sans", "Nimbus Sans", "DejaVu Sans"],
+        "font.size": 10,
+        "axes.titlesize": 12,
+        "axes.labelsize": 10,
+        "xtick.labelsize": 9,
+        "ytick.labelsize": 9,
+        "legend.fontsize": 9,
+        "xtick.major.size": 3,
+        "ytick.major.size": 3,
+        "xtick.major.width": 0.8,
+        "ytick.major.width": 0.8,
         "figure.dpi": 160,
-        "savefig.dpi": 240,
+        "savefig.dpi": 300,
+        "savefig.facecolor": "#FFFFFF",
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
     })
 
 
@@ -80,7 +105,7 @@ def annotate_vertical_bars(ax, decimals: int = 3, y_offset_frac: float = 0.01):
                 f"{h:.{decimals}f}",
                 ha="center",
                 va=va,
-                fontsize=10,
+                fontsize=9,
                 color="#222222",
                 clip_on=False,
             )
@@ -115,7 +140,7 @@ def annotate_horizontal_bars(ax, decimals: int = 3, x_offset_frac: float = 0.012
                 f"{w:.{decimals}f}",
                 ha="left",
                 va="center",
-                fontsize=9,
+                fontsize=8,
                 color="#222222",
                 clip_on=False,
             )
@@ -179,12 +204,12 @@ def render_table_png(df: pd.DataFrame, title: str, out_name: str, max_rows: int 
         pass
 
     for (r, c), cell in table.get_celld().items():
-        cell.set_edgecolor("#D8D6D0")
+        cell.set_edgecolor("#D0D0D0")
         if r == 0:
-            cell.set_facecolor("#EDEAE3")
+            cell.set_facecolor("#F2F2F2")
             cell.set_text_props(weight="bold")
         elif r % 2 == 0:
-            cell.set_facecolor("#FBFAF8")
+            cell.set_facecolor("#FAFAFA")
 
     fig.tight_layout()
     fig.savefig(OUT / out_name)
@@ -366,35 +391,39 @@ def main():
     # ----------------------------
     # Figures (many).
     # ----------------------------
-    # 1) ID mean corr.
-    fig, ax = plt.subplots(figsize=(9, 5))
+    # 1) ID mean + median corr (combined).
+    fig, ax = plt.subplots(figsize=(10, 5))
     labels = [pretty_label(m) for m in phase2_ext["model"]]
-    ax.bar(labels, phase2_ext["mean_gene_correlation"], width=0.56, color=[series_color(m) for m in phase2_ext["model"]])
-    ax.set_title("ID Benchmark: Mean Gene-wise Correlation")
+    x = np.arange(len(labels))
+    w = 0.34
+
+    mean_color = "#4C72B0"
+    median_color = "#DD8452"
+
+    ax.bar(x - w / 2, phase2_ext["mean_gene_correlation"], width=w, label="Mean", color=mean_color)
+    ax.bar(x + w / 2, phase2_ext["median_gene_correlation"], width=w, label="Median", color=median_color)
+
+    ax.set_title("ID Benchmark: Mean vs Median Gene-wise Correlation")
     ax.set_ylabel("Pearson r")
-    ax.set_ylim(0, phase2_ext["mean_gene_correlation"].max() * 1.16)
+    y_max = float(max(phase2_ext["mean_gene_correlation"].max(), phase2_ext["median_gene_correlation"].max()))
+    ax.set_ylim(0, y_max * 1.16)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.tick_params(axis="x", rotation=0)
+
     annotate_vertical_bars(ax, decimals=3)
     ax.grid(False)
-    plt.xticks(rotation=12)
-    plt.tight_layout()
-    fig.savefig(OUT / "fig_01_id_mean_corr_bar.png")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    set_legend_above(ax, ncol=2)
+    ax.margins(x=0.04)
+
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
+    fig.savefig(OUT / "fig_01_id_mean_median_corr_grouped_bar.png")
     # Compatibility names requested in prior assets
     fig.savefig(OUT / "fig_id_model_comparison.png")
     fig.savefig(OUT / "fig_id_model_comparision.png")
-    plt.close(fig)
-
-    # 2) ID median corr.
-    fig, ax = plt.subplots(figsize=(9, 5))
-    labels = [pretty_label(m) for m in phase2_ext["model"]]
-    ax.bar(labels, phase2_ext["median_gene_correlation"], width=0.56, color=[series_color(m) for m in phase2_ext["model"]])
-    ax.set_title("ID Benchmark: Median Gene-wise Correlation")
-    ax.set_ylabel("Pearson r")
-    ax.set_ylim(0, phase2_ext["median_gene_correlation"].max() * 1.15)
-    annotate_vertical_bars(ax, decimals=3)
-    ax.grid(False)
-    plt.xticks(rotation=12)
-    plt.tight_layout()
-    fig.savefig(OUT / "fig_02_id_median_corr_bar.png")
     plt.close(fig)
 
     # 3) ID error metrics.
@@ -430,7 +459,7 @@ def main():
     fig, ax = plt.subplots(figsize=(7, 5))
     for _, row in phase2_ext.iterrows():
         ax.scatter(row["mean_gene_correlation"], row["mae"], s=130, color=series_color(row["model"]))
-        ax.text(row["mean_gene_correlation"] + 0.003, row["mae"] + 0.002, pretty_label(row["model"]), fontsize=10)
+        ax.text(row["mean_gene_correlation"] + 0.003, row["mae"] + 0.002, pretty_label(row["model"]), fontsize=9)
     ax.set_title("ID Trade-off: Correlation vs MAE")
     ax.set_xlabel("Mean gene-wise r")
     ax.set_ylabel("MAE")
@@ -489,19 +518,99 @@ def main():
     fig.savefig(OUT / "fig_08_gene_corr_rank_curves.png")
     plt.close(fig)
 
-    # 9) OOD aggregate mean corr by split.
-    fig, ax = plt.subplots(figsize=(9, 5))
-    pivot = ood_combo.pivot_table(index="model", columns="ood_type", values="ood_mean_of_means", aggfunc="first")
-    pivot = pivot.reindex([m for m in ["vis", "vit", "meanpool_ridge_baseline"] if m in pivot.index])
-    pivot.plot(kind="bar", ax=ax, color=["#7B8CDE", "#56CFE1"], width=0.58)
-    ax.axhline(0, color="#333", linewidth=1)
-    ax.set_title("OOD Mean Correlation: Held-out Organ vs Held-out Slide")
-    ax.set_ylabel("OOD mean of mean r")
-    ax.grid(False)
-    annotate_vertical_bars(ax, decimals=3)
-    set_legend_above(ax, ncol=2)
-    plt.xticks(rotation=0)
-    fig.tight_layout(rect=[0, 0, 1, 0.92])
+    # 9) OOD mean/median correlation (two panels; match Fig 01 palette).
+    models = [m for m in ["vis", "vit", "meanpool_ridge_baseline"] if m in ood_combo["model"].unique()]
+
+    pivot_mean = ood_combo.pivot_table(index="model", columns="ood_type", values="ood_mean_of_means", aggfunc="first").reindex(models)
+    pivot_median = ood_combo.pivot_table(index="model", columns="ood_type", values="ood_mean_of_medians", aggfunc="first").reindex(models)
+
+    def _label_bars(ax, bars, values):
+        y0, y1 = ax.get_ylim()
+        offset = (y1 - y0) * 0.02
+        for b, v in zip(bars, values):
+            if np.isfinite(v):
+                txt = f"{v:.3f}"
+                y = v + offset if v >= 0 else v - offset
+                va = "bottom" if v >= 0 else "top"
+                color = "#222222"
+            else:
+                txt = "n/a"
+                y = 0.0 + offset
+                va = "bottom"
+                color = "#666666"
+            ax.text(
+                b.get_x() + b.get_width() / 2,
+                y,
+                txt,
+                ha="center",
+                va=va,
+                fontsize=9,
+                color=color,
+                clip_on=False,
+            )
+
+    def _panel(ax, split_key: str, title: str):
+        y_mean = pivot_mean[split_key] if split_key in pivot_mean.columns else pd.Series(index=models, dtype=float)
+        y_median = pivot_median[split_key] if split_key in pivot_median.columns else pd.Series(index=models, dtype=float)
+
+        x = np.arange(len(models))
+        w = 0.26
+
+        y_mean_plot = np.nan_to_num(y_mean.to_numpy(dtype=float), nan=0.0)
+        y_median_plot = np.nan_to_num(y_median.to_numpy(dtype=float), nan=0.0)
+
+        bars_mean = ax.bar(x - w / 2, y_mean_plot, width=w, label="Mean", color=mean_color)
+        bars_median = ax.bar(x + w / 2, y_median_plot, width=w, label="Median", color=median_color)
+
+        ax.axhline(0, color="#333", linewidth=1)
+        ax.set_title(title)
+        ax.set_ylabel("OOD gene-wise r")
+        ax.set_xticks(x)
+        ax.set_xticklabels([pretty_label(m) for m in models])
+        ax.tick_params(axis="x", rotation=0)
+
+        ax.grid(False)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.margins(x=0.04)
+
+        _label_bars(ax, bars_mean, y_mean.to_numpy(dtype=float))
+        _label_bars(ax, bars_median, y_median.to_numpy(dtype=float))
+
+    all_vals = np.concatenate([
+        pivot_mean.to_numpy(dtype=float).ravel(),
+        pivot_median.to_numpy(dtype=float).ravel(),
+    ])
+    finite = all_vals[np.isfinite(all_vals)]
+    if finite.size:
+        y_min = float(min(finite.min(), 0.0))
+        y_max = float(max(finite.max(), 0.0))
+        pad = max(0.001, (y_max - y_min) * 0.18)
+        shared_ylim = (y_min - pad, y_max + pad)
+    else:
+        shared_ylim = (-0.01, 0.03)
+
+    fig, axes = plt.subplots(1, 2, figsize=(12.5, 5), sharey=True)
+    fig.subplots_adjust(wspace=0.18)
+    _panel(axes[0], "heldout_organ", "Held-out organ")
+    _panel(axes[1], "heldout_slide", "Held-out slide")
+    for ax in axes:
+        ax.set_ylim(*shared_ylim)
+
+    handles, labels = axes[0].get_legend_handles_labels()
+    if handles:
+        fig.legend(
+            handles,
+            labels,
+            loc="upper center",
+            bbox_to_anchor=(0.5, 0.965),
+            ncol=2,
+            frameon=True,
+            borderaxespad=0.3,
+        )
+
+    fig.suptitle("OOD Correlation: Mean vs Median (Held-out Organ vs Held-out Slide)", y=0.995)
+    fig.tight_layout(rect=[0, 0, 1, 0.90])
     fig.savefig(OUT / "fig_09_ood_corr_by_split.png")
     plt.close(fig)
 

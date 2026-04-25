@@ -272,11 +272,16 @@ def main() -> None:
                 )
                 np.save(roi_out / f"heatmap_{gname}.npy", hm.astype(np.float32))
 
-                fig = plt.figure(figsize=(6, 6))
-                plt.imshow(img)
-                plt.imshow(hm, cmap="inferno", alpha=0.55, interpolation="bilinear")
-                plt.title(f"{slide} | {roi_name} | {gname}")
-                plt.axis("off")
+                fig, ax = plt.subplots(figsize=(6.4, 6))
+                ax.imshow(img)
+                im = ax.imshow(hm, cmap="inferno", alpha=0.55, interpolation="bilinear")
+                ax.set_title(f"{slide} | {roi_name} | {gname}")
+                ax.axis("off")
+
+                # Color scale: darker = lower, brighter = higher.
+                cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.02)
+                cbar.set_label("Predicted expression (a.u.)")
+
                 fig.savefig(roi_out / f"heatmap_{gname}.png", dpi=180, bbox_inches="tight")
                 plt.close(fig)
 
